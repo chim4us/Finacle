@@ -1,0 +1,967 @@
+#============================================================
+# IMPORTANT: Auto Generated Header. DO NOT CHANGE MANUALLY.
+# Product: Finacle Core
+# Category: Event Based
+# Script: ApiTracker.scr
+# Type: ACHCI|default
+# Description: ACHCI - ACHCI
+# Modification Log:
+#============================================================
+
+<--START
+CHECKSUM="5112f91bbfa684f4f771a4949851273fd77a5ad42b73f8e52617665335c2dfe5"
+	# Script body goes here
+	TRACE ON
+	
+	
+	LIBNAME CUSTOMSO
+	sv_a = urhk_B2K_printRepos("BANCS")
+	
+	################################
+	# Creation of  Repositories and Classes
+	#################################
+	IF (REPEXISTS("CUST")==0) THEN
+	#{
+		CREATEREP("CUST")
+	#}
+	ENDIF
+	
+	###########################
+	# Creation of  String type  Class
+	###########################
+	IF (CLASSEXISTS("CUST","DATA")==0) THEN
+	#{
+		CREATECLASS("CUST","DATA",5)
+		#}
+	ELSE
+		#{
+		DELETECLASS("CUST","DATA")
+		CREATECLASS("CUST","DATA",5)
+	#}
+	ENDIF
+	
+	IF (FIELDEXISTS(BANCS.INPUT.Acct_Num) == 0) THEN
+	#{
+		BANCS.INPUT.Acct_Num = ""
+	#}
+	ENDIF
+	
+	IF (FIELDEXISTS(BANCS.INPUT.Phone_No) == 0) THEN
+	#{
+		BANCS.INPUT.Phone_No = ""
+	#}
+	ENDIF
+	
+	IF (FIELDEXISTS(BANCS.INPUT.BVN) == 0) THEN
+	#{
+		BANCS.INPUT.BVN = ""
+	#}
+	ENDIF
+	
+	CUST.DATA.Acct_Num = BANCS.INPUT.Acct_Num
+	CUST.DATA.Phone_No = BANCS.INPUT.Phone_No
+	CUST.DATA.BVN = BANCS.INPUT.BVN
+	CUST.DATA.CorpFlg = ""
+	
+	IF((CUST.DATA.Acct_Num == "") AND (CUST.DATA.Phone_No == "") AND (CUST.DATA.BVN == ""))THEN
+	#{
+		sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+		sv_v="result|FAILED"
+		sv_o=urhk_SetOrbOut(sv_v)
+		sv_k="ErrMsg|PLEASE PROVIDE ANY OF THE FOLLOWING ACCOUNT NUMBER, PHONE NUMBER OR BVN"
+		sv_y=urhk_SetOrbOut(sv_k)
+		sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+		EXITSCRIPT
+	#}
+	ENDIF
+	
+	IF(CUST.DATA.Acct_Num != "")THEN
+	#{
+		sv_q = "CifID|select cif_id from tbaadm.gam where foracid = '" + CUST.DATA.Acct_Num + "' AND BANK_ID = '" + BANCS.STDIN.contextBankId + "' AND rownum = '1' "
+		PRINT(sv_q)
+		sv_k = urhk_dbSelectWithBind(sv_q)
+		PRINT(sv_k)
+		IF (sv_k == 0) THEN
+		#{
+			CUST.DATA.Customer_Id = BANCS.OUTPARAM.CifID
+			#}
+		ELSE
+			#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|WRONG ACCOUNT NUMBER PROVIDED"
+			sv_y=urhk_SetOrbOut(sv_k)
+			EXITSCRIPT
+		#}
+		ENDIF
+		sv_i = "ADDRESS_LINE1,ADDRESS_LINE2,DOB"
+		sv_i = sv_i + "|select ADDRESS_LINE1, ADDRESS_LINE2,to_char(cust_dob,'DD-MM-YYYY') from crmuser.accounts where orgkey='" + CUST.DATA.Customer_Id + "'AND rownum = 1"
+		PRINT(sv_i)
+		sv_o = urhk_dbSelectWithBind(sv_i)
+		PRINT(sv_o)
+		IF (sv_o == 0) THEN
+		#{
+			CUST.DATA.ADDRESS_LINE1	= BANCS.OUTPARAM.ADDRESS_LINE1
+			CUST.DATA.ADDRESS_LINE2	= BANCS.OUTPARAM.ADDRESS_LINE2
+			CUST.DATA.DOB	= BANCS.OUTPARAM.DOB
+			CUST.DATA.ADDRESS = CUST.DATA.ADDRESS_LINE1 + "," + CUST.DATA.ADDRESS_LINE2
+			PRINT(CUST.DATA.ADDRESS)
+		#}
+		ENDIF
+		sv_q = "AcctClsFlg,DOB,ADDRESS_LINE1, ADDRESS_LINE2,acctNum,acctNam,solId,solDesc,schmCode,schmDesc,acctCrncyCode,ClrBal,AcctTyp,PhNm,Email, schmType, acid,cifId,AcctOpnDate"
+		sv_q = sv_q + " |select g.acct_cls_flg, to_char(h.cust_dob,'DD-MM-YYYY'),h.ADDRESS_LINE1, h.ADDRESS_LINE2,foracid, acct_name,sol_id, (select SOL_DESC from tbaadm.sol where sol_id = g.sol_id AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = '1'), "
+		sv_q = sv_q + " schm_code, (select SCHM_DESC from tbaadm.gsp where schm_code = g.schm_code AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = '1'), acct_crncy_code, "
+		sv_q = sv_q + " CLR_BAL_AMT, decode(schm_type,'SBA','SAVINGS','ODA','CURRENT','CAA','CURRENT','OTHER'),"
+		sv_q = sv_q + " (select PHONENOLOCALCODE from crmuser.phoneemail where PREFERREDFLAG = 'Y' AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND "
+		sv_q = sv_q + " PHONEOREMAIL = 'PHONE' AND ORGKEY = g.cif_id AND rownum = 1),"
+		sv_q = sv_q + " (select EMAIL from crmuser.phoneemail where PREFERREDFLAG = 'Y' AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND "
+		sv_q = sv_q + " PHONEOREMAIL = 'EMAIL' AND ORGKEY = g.cif_id AND rownum = 1), schm_type,acid,cif_id,to_char(acct_opn_date,'DD-MON-YYYY') from tbaadm.gam g,crmuser.accounts h  "
+		sv_q = sv_q + " where cif_id = '" + CUST.DATA.Customer_Id + "' AND schm_type in ('ODA','SBA','CAA') AND h.bank_id = '" + BANCS.STDIN.contextBankId + "' "
+		sv_q = sv_q + " AND foracid = '" + CUST.DATA.Acct_Num + "' AND rownum = 1"
+		sv_q = sv_q + " AND g.cif_id = h.orgkey"
+		sv_q = sv_q + " AND g.bank_id = h.bank_id"
+		PRINT(sv_q)
+		sv_k = urhk_dbSelectWithBind(sv_q)
+		PRINT(sv_k)
+		IF (sv_k == 0) THEN
+		#{
+			CUST.DATA.DOB	= BANCS.OUTPARAM.DOB
+			CUST.DATA.ADDRESS_LINE1	= BANCS.OUTPARAM.ADDRESS_LINE1
+			CUST.DATA.ADDRESS_LINE2	= BANCS.OUTPARAM.ADDRESS_LINE2
+			CUST.DATA.acctNum 	= BANCS.OUTPARAM.acctNum
+			CUST.DATA.acctNam 	= BANCS.OUTPARAM.acctNam
+			CUST.DATA.solId 	= BANCS.OUTPARAM.solId
+			CUST.DATA.solDesc 	= BANCS.OUTPARAM.solDesc
+			CUST.DATA.schmCode 	= BANCS.OUTPARAM.schmCode
+			CUST.DATA.schmDesc 	= BANCS.OUTPARAM.schmDesc
+			CUST.DATA.acctCrncyCode 	= BANCS.OUTPARAM.acctCrncyCode
+			CUST.DATA.ClrBal 	= BANCS.OUTPARAM.ClrBal
+			CUST.DATA.AcctTyp 	= BANCS.OUTPARAM.AcctTyp
+			CUST.DATA.PhNm 	= BANCS.OUTPARAM.PhNm
+			CUST.DATA.Email 	= BANCS.OUTPARAM.Email
+			CUST.DATA.schmType 	= BANCS.OUTPARAM.schmType
+			CUST.DATA.acid 	= BANCS.OUTPARAM.acid
+			CUST.DATA.cifId 	= BANCS.OUTPARAM.cifId
+			CUST.DATA.AcctOpnDate 	= BANCS.OUTPARAM.AcctOpnDate
+			CUST.DATA.AcctClsFlg	= BANCS.OUTPARAM.AcctClsFlg
+			
+			CUST.DATA.ADDRESS = CUST.DATA.ADDRESS_LINE1 + "," + CUST.DATA.ADDRESS_LINE2
+			PRINT(CUST.DATA.ADDRESS)
+			IF ((CUST.DATA.schmType == "SBA") OR (CUST.DATA.schmType == "CAA"))THEN
+			#{
+				sv_q = "stat|select decode(ACCT_STATUS,'D','DORMANT','A','ACTIVE','INACTIVE') from tbaadm.smt where acid = '" + CUST.DATA.acid + "' "
+				sv_q = sv_q + " AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = 1 "
+				PRINT(sv_q)
+				sv_k = urhk_dbSelectWithBind(sv_q)
+				PRINT(sv_k)
+				IF (sv_k == 0) THEN
+				#{
+					CUST.DATA.AcctStat = BANCS.OUTPARAM.stat
+				#}
+				ENDIF
+			#}
+			ENDIF
+			
+			sv_q = "cnt|select count(1) from crmuser.accounts where orgkey = (select cif_id from tbaadm.gam where foracid = '" + CUST.DATA.acctNum + "') AND  corp_id is not null"
+			sv_k = urhk_dbSelectWithBind(sv_q)
+			PRINT(sv_k)
+			IF (sv_k == 0) THEN
+			#{
+				sv_m = BANCS.OUTPARAM.cnt
+				IF(CINT(sv_m) > CINT("0"))THEN
+				#{
+					CUST.DATA.CorpFlg = "Y"
+					#}
+				ELSE
+					#{
+					CUST.DATA.CorpFlg = "N"
+				#}
+				ENDIF
+				#}
+			ELSE
+				#{
+				CUST.DATA.CorpFlg = "N"
+			#}
+			ENDIF
+			
+			sv_q = "bvn|select STRUSERFIELD30 from crmuser.accounts where orgkey = '" + CUST.DATA.cifId + "' "
+			sv_q = sv_q + " AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = 1 "
+			PRINT(sv_q)
+			sv_k = urhk_dbSelectWithBind(sv_q)
+			PRINT(sv_k)
+			IF (sv_k == 0) THEN
+			#{
+				CUST.DATA.bvn = BANCS.OUTPARAM.bvn
+			#}
+			ENDIF
+			
+			sv_q = "GenD|select upper(GENDER) from crmuser.accounts where orgkey = '" + CUST.DATA.cifId + "' "
+			sv_q = sv_q + " AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = 1 "
+			PRINT(sv_q)
+			sv_k = urhk_dbSelectWithBind(sv_q)
+			PRINT(sv_k)
+			IF (sv_k == 0) THEN
+			#{
+				CUST.DATA.GenD = BANCS.OUTPARAM.GenD
+			#}
+			ENDIF
+			
+			IF(CUST.DATA.GenD == "")THEN
+			#{
+				CUST.DATA.GenD = " "
+			#}
+			ENDIF
+			
+			IF (CUST.DATA.schmType == "ODA") THEN
+			#{
+				sv_q = "stat|select decode(ACCT_STATUS,'D','DORMANT','A','ACTIVE','INACTIVE') from tbaadm.cam where acid = '" + CUST.DATA.acid + "' "
+				sv_q = sv_q + " AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = 1 "
+				PRINT(sv_q)
+				sv_k = urhk_dbSelectWithBind(sv_q)
+				PRINT(sv_k)
+				IF (sv_k == 0) THEN
+				#{
+					CUST.DATA.AcctStat = BANCS.OUTPARAM.stat
+				#}
+				ENDIF
+			#}
+			ENDIF
+			
+			PRINT( CUST.DATA.AcctTyp)
+			PRINT( CUST.DATA.ClrBal)
+			PRINT( CUST.DATA.PhNm)
+			
+			IF(CUST.DATA.Email == "")THEN
+			#{
+				CUST.DATA.Email = "NAV"
+			#}
+			ENDIF
+			IF(CUST.DATA.bvn == "")THEN
+			#{
+				CUST.DATA.bvn = "NAV"
+			#}
+			ENDIF
+			IF(CUST.DATA.PhNm == "")THEN
+			#{
+				CUST.DATA.PhNm = " "
+			#}
+			ENDIF
+			
+			sv_v="result|SUCCESS"
+			sv_o=urhk_SetOrbOut(sv_v)
+			IF(CUST.DATA.acctNum != "")THEN
+			#{
+				sv_v="AcctNum|" + CUST.DATA.acctNum
+			#}
+			ELSE
+			#{
+				sv_v="AcctNum| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.acctNam != "")THEN
+			#{
+				sv_v="AcctNam|" + CUST.DATA.acctNam
+			#}
+			ELSE
+			#{
+				sv_v="AcctNam| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.solId != "")THEN
+			#{
+				sv_v="solId|" + CUST.DATA.solId
+			#}
+			ELSE
+			#{
+				sv_v="solId| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.solDesc != "")THEN
+			#{
+				sv_v="solDesc|" + CUST.DATA.solDesc
+			#}
+			ELSE
+			#{
+				sv_v="solDesc| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.schmCode != "")THEN
+			#{
+				sv_v="schmCode|" + CUST.DATA.schmCode
+			#}
+			ELSE
+			#{
+				sv_v="schmCode| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.schmDesc != "")THEN
+			#{
+				sv_v="schmDesc|" + CUST.DATA.schmDesc
+			#}
+			ELSE
+			#{
+				sv_v="schmDesc| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.acctCrncyCode != "")THEN
+			#{
+				sv_v="CrncyCode|" + CUST.DATA.acctCrncyCode
+			#}
+			ELSE
+			#{
+				sv_v="CrncyCode| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.ClrBal != "")THEN
+			#{
+				sv_v="ClrBal|" + CUST.DATA.ClrBal
+			#}
+			ELSE
+			#{
+				sv_v="ClrBal| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.AcctTyp != "")THEN
+			#{
+				sv_v="AcctTyp|" + CUST.DATA.AcctTyp
+			#}
+			ELSE
+			#{
+				sv_v="AcctTyp| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.PhNm != "")THEN
+			#{
+				sv_v="PhNm|" + CUST.DATA.PhNm
+			#}
+			ELSE
+			#{
+				sv_v="PhNm| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.Email != "")THEN
+			#{
+				sv_v="Email|" + CUST.DATA.Email
+			#}
+			ELSE
+			#{
+				sv_v="Email| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.AcctStat != "")THEN
+			#{
+				sv_v="AcctStat|" + CUST.DATA.AcctStat
+			#}
+			ELSE
+			#{
+				sv_v="AcctStat| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.bvn != "")THEN
+			#{
+				sv_v="BVN|" + CUST.DATA.bvn
+			#}
+			ELSE
+			#{
+				sv_v="BVN| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.AcctOpnDate != "")THEN
+			#{
+				sv_v="AcctOpnDate|" + CUST.DATA.AcctOpnDate
+			#}
+			ELSE
+			#{
+				sv_v="AcctOpnDate| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.CorpFlg != "")THEN
+			#{
+				sv_v="CorpFlg|" + CUST.DATA.CorpFlg
+			#}
+			ELSE
+			#{
+				sv_v="CorpFlg| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.ADDRESS != "")THEN
+			#{
+				sv_v="ADDRESS|" + CUST.DATA.ADDRESS
+			#}
+			ELSE
+			#{
+				sv_v="ADDRESS| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.GenD != "")THEN
+			#{
+				sv_v="GENDER|" + CUST.DATA.GenD
+			#}
+			ELSE
+			#{
+				sv_v="GENDER| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.DOB != "")THEN
+			#{
+				sv_v="DOB|" + CUST.DATA.DOB
+			#}
+			ELSE
+			#{
+				sv_v="DOB| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.cifId != "")THEN
+			#{
+				sv_v="CIF|" + CUST.DATA.cifId
+			#}
+			ELSE
+			#{
+				sv_v="CIF| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			IF(CUST.DATA.AcctClsFlg != "")THEN
+			#{
+				sv_v="ACCTCLSFLG|" + CUST.DATA.AcctClsFlg
+			#}
+			ELSE
+			#{
+				sv_v="ACCTCLSFLG| "
+			#}
+			ENDIF
+			sv_o=urhk_SetOrbOut(sv_v)
+			
+			
+			EXITSCRIPT
+		#}
+		ENDIF
+	#}
+	ENDIF
+	
+	
+	IF(CUST.DATA.Phone_No != "")THEN
+	#{
+		sv_q = "CifID|select ORGKEY from crmuser.phoneemail where PHONENOLOCALCODE = '" + CUST.DATA.Phone_No + "' AND BANK_ID = '" + BANCS.STDIN.contextBankId + "' AND rownum = '1' "
+		PRINT(sv_q)
+		sv_k = urhk_dbSelectWithBind(sv_q)
+		PRINT(sv_k)
+		IF (sv_k == 0) THEN
+		#{
+			CUST.DATA.Customer_Id = BANCS.OUTPARAM.CifID
+			#}
+		ELSE
+			#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|PLEASE PROVIDE CURRENT PHONE NUMBER CUSTOMER IS USING"
+			sv_y=urhk_SetOrbOut(sv_k)
+			EXITSCRIPT
+		#}
+		ENDIF
+	#}
+	ENDIF
+	
+	IF(CUST.DATA.BVN != "")THEN
+	#{
+		sv_q = "CifID|select ORGKEY from crmuser.accounts where STRUSERFIELD30 = '" + CUST.DATA.BVN + "' AND BANK_ID = '" + BANCS.STDIN.contextBankId + "' AND rownum = 1 "
+		PRINT(sv_q)
+		sv_k = urhk_dbSelectWithBind(sv_q)
+		PRINT(sv_k)
+		IF (sv_k == 0) THEN
+		#{
+			CUST.DATA.Customer_Id = BANCS.OUTPARAM.CifID
+			#}
+		ELSE
+			#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|PLEASE PROVIDE CURRENT PHONE NUMBER CUSTOMER IS USING"
+			sv_y=urhk_SetOrbOut(sv_k)
+			EXITSCRIPT
+		#}
+		ENDIF
+	#}
+	ENDIF
+	
+	sv_q = "ForacidCnt|select count(1) from tbaadm.gam where cif_id = '" + CUST.DATA.Customer_Id + "'  "
+	sv_q = sv_q + " AND BANK_ID = '" + BANCS.STDIN.contextBankId + "' AND schm_type in ('ODA','SBA','CAA') "
+	IF(CUST.DATA.Acct_Num != "")THEN
+	#{
+		sv_q = sv_q + " AND foracid = '" + CUST.DATA.Acct_Num + "' AND rownum = 1"
+	#}
+	ENDIF
+	PRINT(sv_q)
+	sv_k = urhk_dbSelectWithBind(sv_q)
+	PRINT(sv_k)
+	IF (sv_k == 0) THEN
+	#{
+		CUST.DATA.TotalCount = BANCS.OUTPARAM.ForacidCnt
+		#}
+	ELSE
+		#{
+		CUST.DATA.TotalCount = "0"
+	#}
+	ENDIF
+	
+	sv_v="TotalCount|" + CUST.DATA.TotalCount
+	sv_o=urhk_SetOrbOut(sv_v)
+	
+	sv_q = "AcctClsFlg,DOB,ADDRESS_LINE1, ADDRESS_LINE2,acctNum,acctNam,solId,solDesc,schmCode,schmDesc,acctCrncyCode,ClrBal,AcctTyp,PhNm,Email, schmType, acid,cifId,AcctOpnDate"
+	sv_q = sv_q + " |select g.acct_cls_flg, to_char(cust_dob,'DD-MM-YYYY'),ADDRESS_LINE1, ADDRESS_LINE2,foracid, acct_name,sol_id, (select SOL_DESC from tbaadm.sol where sol_id = g.sol_id AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = '1'), "
+	sv_q = sv_q + " schm_code, (select SCHM_DESC from tbaadm.gsp where schm_code = g.schm_code AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = '1'), acct_crncy_code, "
+	sv_q = sv_q + " CLR_BAL_AMT, decode(schm_type,'SBA','SAVINGS','ODA','CURRENT','CAA','CURRENT','OTHER'),"
+	sv_q = sv_q + " (select PHONENOLOCALCODE from crmuser.phoneemail where PREFERREDFLAG = 'Y' AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND "
+	sv_q = sv_q + " PHONEOREMAIL = 'PHONE' AND ORGKEY = g.cif_id AND rownum = 1),"
+	sv_q = sv_q + " (select EMAIL from crmuser.phoneemail where PREFERREDFLAG = 'Y' AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND "
+	sv_q = sv_q + " PHONEOREMAIL = 'EMAIL' AND ORGKEY = g.cif_id AND rownum = 1), schm_type,acid,cif_id,to_char(acct_opn_date,'DD-MON-YYYY') from tbaadm.gam g ,crmuser.accounts h"
+	sv_q = sv_q + " where cif_id = '" + CUST.DATA.Customer_Id + "' AND schm_type in ('ODA','SBA','CAA') AND g.bank_id = '" + BANCS.STDIN.contextBankId + "' "
+	sv_q = sv_q + " AND g.cif_id = h.orgkey"
+	sv_q = sv_q + " AND g.bank_id = h.bank_id"
+	IF(CUST.DATA.Acct_Num != "")THEN
+	#{
+		sv_q = sv_q + " AND foracid = '" + CUST.DATA.Acct_Num + "' AND rownum = 1"
+	#}
+	ENDIF
+	PRINT(sv_q)
+	sv_d = urhk_dbCursorOpenWithBind(sv_q)
+	PRINT(sv_d)
+	
+	############################################################################
+	# IF the cursor open user hook is success then open the cursor
+	############################################################################
+	
+	IF(sv_d != 0)THEN
+	#{
+		sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+		sv_v="result|FAILED"
+		sv_o=urhk_SetOrbOut(sv_v)
+		sv_k="ErrMsg|CAN'T FETCH ACCOUNT DETAILS"
+		sv_y=urhk_SetOrbOut(sv_k)
+		EXITSCRIPT
+		#}
+	ELSE
+		#{
+		CUST.DATA.curNum = BANCS.OUTPARAM.DB_CURSOR_NUMBER
+		PRINT(CUST.DATA.curNum)
+		
+		CUST.DATA.fetchReturn = urhk_dbCursorFetch(CUST.DATA.curNum)
+		
+		############################################################################
+		# IF the fetch user hook is success then execute the while loop
+		############################################################################
+		
+		IF(CUST.DATA.fetchReturn == 0) THEN
+		#{
+			sv_n = 1
+			WHILE(CUST.DATA.fetchReturn == 0)
+			#{
+				CUST.DATA.DOB = BANCS.OUTPARAM.DOB
+				CUST.DATA.ADDRESS_LINE1	= BANCS.OUTPARAM.ADDRESS_LINE1
+				CUST.DATA.ADDRESS_LINE2	= BANCS.OUTPARAM.ADDRESS_LINE2
+				CUST.DATA.acctNum 	= BANCS.OUTPARAM.acctNum
+				CUST.DATA.acctNam 	= BANCS.OUTPARAM.acctNam
+				CUST.DATA.solId 	= BANCS.OUTPARAM.solId
+				CUST.DATA.solDesc 	= BANCS.OUTPARAM.solDesc
+				CUST.DATA.schmCode 	= BANCS.OUTPARAM.schmCode
+				CUST.DATA.schmDesc 	= BANCS.OUTPARAM.schmDesc
+				CUST.DATA.acctCrncyCode 	= BANCS.OUTPARAM.acctCrncyCode
+				CUST.DATA.ClrBal 	= BANCS.OUTPARAM.ClrBal
+				CUST.DATA.AcctTyp 	= BANCS.OUTPARAM.AcctTyp
+				CUST.DATA.PhNm 	= BANCS.OUTPARAM.PhNm
+				CUST.DATA.Email 	= BANCS.OUTPARAM.Email
+				CUST.DATA.schmType 	= BANCS.OUTPARAM.schmType
+				CUST.DATA.acid 	= BANCS.OUTPARAM.acid
+				CUST.DATA.cifId 	= BANCS.OUTPARAM.cifId
+				CUST.DATA.AcctOpnDate 	= BANCS.OUTPARAM.AcctOpnDate
+				CUST.DATA.ADDRESS = CUST.DATA.ADDRESS_LINE1 + "," + CUST.DATA.ADDRESS_LINE2
+				CUST.DATA.AcctClsFlg	= BANCS.OUTPARAM.AcctClsFlg
+				PRINT(CUST.DATA.ADDRESS)
+				
+				IF ((CUST.DATA.schmType == "SBA") OR (CUST.DATA.schmType == "CAA"))THEN
+				#{
+					sv_q = "stat|select decode(ACCT_STATUS,'D','DORMANT','A','ACTIVE','INACTIVE') from tbaadm.smt where acid = '" + CUST.DATA.acid + "' "
+					sv_q = sv_q + " AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = 1 "
+					PRINT(sv_q)
+					sv_k = urhk_dbSelectWithBind(sv_q)
+					PRINT(sv_k)
+					IF (sv_k == 0) THEN
+					#{
+						CUST.DATA.AcctStat = BANCS.OUTPARAM.stat
+					#}
+					ENDIF
+				#}
+				ENDIF
+				
+				sv_q = "cnt|select count(1) from crmuser.accounts where orgkey = '" + CUST.DATA.cifId + "' AND  corp_id is not null"
+				sv_k = urhk_dbSelectWithBind(sv_q)
+				PRINT(sv_k)
+				IF (sv_k == 0) THEN
+				#{
+					sv_m = BANCS.OUTPARAM.cnt
+					IF(CINT(sv_m) > CINT("0"))THEN
+					#{
+						CUST.DATA.CorpFlg = "Y"
+						#}
+					ELSE
+						#{
+						CUST.DATA.CorpFlg = "N"
+					#}
+					ENDIF
+					#}
+				ELSE
+					#{
+					CUST.DATA.CorpFlg = "N"
+				#}
+				ENDIF
+				
+				sv_q = "bvn|select STRUSERFIELD30 from crmuser.accounts where orgkey = '" + CUST.DATA.cifId + "' "
+				sv_q = sv_q + " AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = 1 "
+				PRINT(sv_q)
+				sv_k = urhk_dbSelectWithBind(sv_q)
+				PRINT(sv_k)
+				IF (sv_k == 0) THEN
+				#{
+					CUST.DATA.bvn = BANCS.OUTPARAM.bvn
+				#}
+				ENDIF
+				
+				sv_q = "GenD|select upper(GENDER) from crmuser.accounts where orgkey = '" + CUST.DATA.cifId + "' "
+				sv_q = sv_q + " AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = 1 "
+				PRINT(sv_q)
+				sv_k = urhk_dbSelectWithBind(sv_q)
+				PRINT(sv_k)
+				IF (sv_k == 0) THEN
+				#{
+					CUST.DATA.GenD = BANCS.OUTPARAM.GenD
+				#}
+				ENDIF
+				
+				IF(CUST.DATA.GenD == "")THEN
+				#{
+					CUST.DATA.GenD = " "
+				#}
+				ENDIF
+				
+				IF (CUST.DATA.schmType == "ODA") THEN
+				#{
+					sv_q = "stat|select decode(ACCT_STATUS,'D','DORMANT','A','ACTIVE','INACTIVE') from tbaadm.cam where acid = '" + CUST.DATA.acid + "' "
+					sv_q = sv_q + " AND bank_id = '" + BANCS.STDIN.contextBankId + "' AND rownum = 1 "
+					PRINT(sv_q)
+					sv_k = urhk_dbSelectWithBind(sv_q)
+					PRINT(sv_k)
+					IF (sv_k == 0) THEN
+					#{
+						CUST.DATA.AcctStat = BANCS.OUTPARAM.stat
+					#}
+					ENDIF
+				#}
+				ENDIF
+				
+				BANCS.INPARAM.BINDVARS = sv_n
+				sv_q = "nm| select ?SVAR from dual"
+				PRINT(sv_q)
+				sv_k = urhk_dbSelectWithBind(sv_q)
+				sv_a = BANCS.OUTPARAM.nm
+				PRINT( CUST.DATA.AcctTyp)
+				PRINT( CUST.DATA.ClrBal)
+				PRINT( CUST.DATA.PhNm)
+				
+				IF(CUST.DATA.Email == "")THEN
+				#{
+					CUST.DATA.Email = "NAV"
+				#}
+				ENDIF
+				IF(CUST.DATA.bvn == "")THEN
+				#{
+					CUST.DATA.bvn = "NAV"
+				#}
+				ENDIF
+				
+				sv_v="result|SUCCESS"
+				sv_o=urhk_SetOrbOut(sv_v)
+				IF(CUST.DATA.acctNum != "")THEN
+				#{
+					sv_v="AcctNum_"+ sv_a +"|" + CUST.DATA.acctNum
+				#}
+				ELSE
+				#{
+					sv_v="AcctNum_"+ sv_a +"| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.acctNam != "")THEN
+				#{
+					sv_v="AcctNam_" + sv_a + "|" + CUST.DATA.acctNam
+				#}
+				ELSE
+				#{
+					sv_v="AcctNam_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.solId != "")THEN
+				#{
+					sv_v="solId_" + sv_a + "|" + CUST.DATA.solId
+				#}
+				ELSE
+				#{
+					sv_v="solId_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.solDesc != "")THEN
+				#{
+					sv_v="solDesc_" + sv_a + "|" + CUST.DATA.solDesc
+				#}
+				ELSE
+				#{
+					sv_v="solDesc_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.schmCode != "")THEN
+				#{
+					sv_v="schmCode_" + sv_a + "|" + CUST.DATA.schmCode
+				#}
+				ELSE
+				#{
+					sv_v="schmCode_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.schmDesc != "")THEN
+				#{
+					sv_v="schmDesc_" + sv_a + "|" + CUST.DATA.schmDesc
+				#}
+				ELSE
+				#{
+					sv_v="schmDesc_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.acctCrncyCode != "")THEN
+				#{
+					sv_v="CrncyCode_" + sv_a + "|" + CUST.DATA.acctCrncyCode
+				#}
+				ELSE
+				#{
+					sv_v="CrncyCode_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.ClrBal != "")THEN
+				#{
+					sv_v="ClrBal_" + sv_a + "|" + CUST.DATA.ClrBal
+				#}
+				ELSE
+				#{
+					sv_v="ClrBal_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.AcctTyp != "")THEN
+				#{
+					sv_v="AcctTyp_" + sv_a + "|" + CUST.DATA.AcctTyp
+				#}
+				ELSE
+				#{
+					sv_v="AcctTyp_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.PhNm != "")THEN
+				#{
+					sv_v="PhNm_" + sv_a + "|" + CUST.DATA.PhNm
+				#}
+				ELSE
+				#{
+					sv_v="PhNm_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF( CUST.DATA.Email != "")THEN
+				#{
+					sv_v="Email_" + sv_a + "|" + CUST.DATA.Email
+				#}
+				ELSE
+				#{
+					sv_v="Email_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.AcctStat != "")THEN
+				#{
+					sv_v="AcctStat_" + sv_a + "|" + CUST.DATA.AcctStat
+				#}
+				ELSE
+				#{
+					sv_v="AcctStat_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.bvn != "")THEN
+				#{
+					sv_v="BVN_" + sv_a + "|" + CUST.DATA.bvn
+				#}
+				ELSE
+				#{
+					sv_v="BVN_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.AcctOpnDate != "")THEN
+				#{
+					sv_v="AcctOpnDate_" + sv_a + "|" + CUST.DATA.AcctOpnDate
+				#}
+				ELSE
+				#{
+					sv_v="AcctOpnDate_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.CorpFlg != "")THEN
+				#{
+					sv_v="CorpFlg_" + sv_a + "|" + CUST.DATA.CorpFlg
+				#}
+				ELSE
+				#{
+					sv_v="CorpFlg_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.ADDRESS != "")THEN
+				#{
+					sv_v="ADDRESS_" + sv_a + "|" + CUST.DATA.ADDRESS
+				#}
+				ELSE
+				#{
+					sv_v="ADDRESS_" + sv_a + "| "
+				#}
+				ENNDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.GenD != "")THEN
+				#{
+					sv_v="GENDER_" + sv_a + "|" + CUST.DATA.GenD
+				#}
+				ELSE
+				#{
+					sv_v="GENDER_" + sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.DOB != "")THEN
+				#{
+					sv_v="DOB|" + CUST.DATA.DOB
+				#}
+				ELSE
+				#{
+					sv_v="DOB| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.cifId != "")THEN
+				#{
+					sv_v="CIF|" + CUST.DATA.cifId
+				#}
+				ELSE
+				#{
+					sv_v="CIF| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.AcctClsFlg != "")THEN
+				#{
+					sv_v="ACCTCLSFLG_"+ sv_a + "|" + CUST.DATA.AcctClsFlg
+				#}
+				ELSE
+				#{
+					sv_v="ACCTCLSFLG_"+ sv_a + "| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				IF(CUST.DATA.AcctClsFlg != "")THEN
+				#{
+					sv_v="ACCTCLSFLG|" + CUST.DATA.AcctClsFlg
+				#}
+				ELSE
+				#{
+					sv_v="ACCTCLSFLG| "
+				#}
+				ENDIF
+				sv_o=urhk_SetOrbOut(sv_v)
+				
+				NEXT:
+					CUST.DATA.fetchReturn = urhk_dbCursorFetch(CUST.DATA.curNum)
+					PRINT(CUST.DATA.fetchReturn)
+					sv_n = sv_n + 1
+				#}
+				DO
+			#}
+			ENDIF
+		#}
+		ENDIF
+		
+		
+		TRACE OFF
+END-->
