@@ -1,0 +1,348 @@
+<--start
+trace on 
+
+	LIBNAME CUSTOMSO
+	sv_a = urhk_B2K_printRepos("BANCS")
+	
+	################################
+	# Creation of  Repositories and Classes
+	#################################
+	IF (REPEXISTS("CUST")==0) THEN
+	#{
+		CREATEREP("CUST")
+	#}
+	ENDIF
+	###########################
+	# Creation of  String type  Class
+	###########################
+	IF (CLASSEXISTS("CUST","DATA")==0) THEN
+	#{
+		CREATECLASS("CUST","DATA",5)
+		#}
+	ELSE
+		#{
+		DELETECLASS("CUST","DATA")
+		CREATECLASS("CUST","DATA",5)
+	#}
+	ENDIF
+	
+	IF (FIELDEXISTS(BANCS.INPUT.TotalRc) == 0) THEN
+	#{
+		sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+		sv_v="result|FAILED"
+		sv_o=urhk_SetOrbOut(sv_v)
+		sv_k="ErrMsg|PLEASE PROVIDE TOTAL NUMBER OF RECORDS "
+		sv_y=urhk_SetOrbOut(sv_k)
+		sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+		EXITSCRIPT	
+	#}
+	ENDIF
+	
+	IF (FIELDEXISTS(BANCS.INPUT.tranType) == 0) THEN
+	#{
+		sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+		sv_v="result|FAILED"
+		sv_o=urhk_SetOrbOut(sv_v)
+		sv_k="ErrMsg|PLEASE PROVIDE TRANSACTION TYPE "
+		sv_y=urhk_SetOrbOut(sv_k)
+		sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+		EXITSCRIPT	
+	#}
+	ENDIF
+	
+	IF (FIELDEXISTS(BANCS.INPUT.tranSubType) == 0) THEN
+	#{
+		sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+		sv_v="result|FAILED"
+		sv_o=urhk_SetOrbOut(sv_v)
+		sv_k="ErrMsg|PLEASE PROVIDE TRANSACTION SUB TYPE "
+		sv_y=urhk_SetOrbOut(sv_k)
+		sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+		EXITSCRIPT	
+	#}
+	ENDIF
+	CUST.DATA.tranSubType = BANCS.INPUT.tranSubType
+	CUST.DATA.tranType = BANCS.INPUT.tranType
+	
+	sv_a = urhk_SetUrhkInp("transferTranHdr.tranTypeSubType.tranType|T" )
+	sv_a = urhk_SetUrhkInp("transferTranHdr.tranTypeSubType.tranSubType|" + CUST.DATA.tranSubType)
+	sv_a = urhk_SetUrhkInp("tranDtl.pstFlg|Y")
+	sv_a = urhk_SetUrhkInp("tranDtl.ignoreXcpnFlg|Y") 
+		
+	CUST.DATA.TotalRc = BANCS.INPUT.TotalRc
+	CUST.DATA.TotalCk = CUST.DATA.TotalRc
+	CUST.DATA.SrlNum = "1"
+	CUST.DATA.SrlNumLp = "0"
+	CUST.DATA.AcctNumDD = ""
+	
+	WHILE (CUST.DATA.TotalCk != 0)
+	#{
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("AcctNum_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|PLEASE PROVIDE VALUE FOR AcctNum_" +  CUST.DATA.SrlNum
+			sv_y=urhk_SetOrbOut(sv_k)
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			EXITSCRIPT	
+		#}
+		ENDIF
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("DebitCredit_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|PLEASE PROVIDE VALUE FOR DebitCredit_" +  CUST.DATA.SrlNum
+			sv_y=urhk_SetOrbOut(sv_k)
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			EXITSCRIPT	
+		#}
+		ENDIF
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("CrncyCd_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|PLEASE PROVIDE VALUE FOR CrncyCd_" +  CUST.DATA.SrlNum
+			sv_y=urhk_SetOrbOut(sv_k)
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			EXITSCRIPT	
+		#}
+		ENDIF
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("TranAmt_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|PLEASE PROVIDE VALUE FOR TranAmt_" +  CUST.DATA.SrlNum
+			sv_y=urhk_SetOrbOut(sv_k)
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			EXITSCRIPT	
+		#}
+		ENDIF
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("TranPart_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|PLEASE PROVIDE VALUE FOR TranPart_" +  CUST.DATA.SrlNum
+			sv_y=urhk_SetOrbOut(sv_k)
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			EXITSCRIPT	
+		#}
+		ENDIF
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("ValueDate_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|PLEASE PROVIDE VALUE FOR ValueDate_" +  CUST.DATA.SrlNum
+			sv_y=urhk_SetOrbOut(sv_k)
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			EXITSCRIPT	
+		#}
+		ENDIF
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("TranRmks_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_v="result|FAILED"
+			sv_o=urhk_SetOrbOut(sv_v)
+			sv_k="ErrMsg|PLEASE PROVIDE VALUE FOR TranRmks_" +  CUST.DATA.SrlNum
+			sv_y=urhk_SetOrbOut(sv_k)
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			EXITSCRIPT	
+		#}
+		ENDIF
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("InstType_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			("BANCS").("INPUT").("InstType_" + CUST.DATA.SrlNum) = ""
+		#}
+		ENDIF
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("InstDate_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			 ("BANCS").("INPUT").("InstDate_" + CUST.DATA.SrlNum) = ""
+		#}
+		ENDIF
+		IF (FIELDEXISTS( ("BANCS").("INPUT").("InstNo_" + CUST.DATA.SrlNum)) == 0) THEN
+		#{
+			 ("BANCS").("INPUT").("InstNo_" + CUST.DATA.SrlNum) = ""
+		#}
+		ENDIF
+		
+		CUST.DATA.AcctNm = ("BANCS").("INPUT").("AcctNum_" + CUST.DATA.SrlNum)
+		CUST.DATA.DebitCredit = ("BANCS").("INPUT").("DebitCredit_" + CUST.DATA.SrlNum)
+		CUST.DATA.CrncyCd = ("BANCS").("INPUT").("CrncyCd_" + CUST.DATA.SrlNum)
+		CUST.DATA.TranAmt = ("BANCS").("INPUT").("TranAmt_" + CUST.DATA.SrlNum)
+		CUST.DATA.TranPart = ("BANCS").("INPUT").("TranPart_" + CUST.DATA.SrlNum)
+		CUST.DATA.ValueDate = ("BANCS").("INPUT").("ValueDate_" + CUST.DATA.SrlNum)
+		CUST.DATA.TranRmks = ("BANCS").("INPUT").("TranRmks_" + CUST.DATA.SrlNum)
+		
+		CUST.DATA.InstType = ("BANCS").("INPUT").("InstType_" + CUST.DATA.SrlNum)
+		CUST.DATA.InstDate = ("BANCS").("INPUT").("InstDate_" + CUST.DATA.SrlNum)
+		CUST.DATA.InstNo = ("BANCS").("INPUT").("InstNo_" + CUST.DATA.SrlNum)
+		
+		print(("BANCS").("INPUT").("AcctNum_" + CUST.DATA.SrlNum))
+		print(("BANCS").("INPUT").("DebitCredit_" + CUST.DATA.SrlNum))
+		print(("BANCS").("INPUT").("TranAmt_" + CUST.DATA.SrlNum))
+		print(("BANCS").("INPUT").("TranPart_" + CUST.DATA.SrlNum))
+		print(("BANCS").("INPUT").("ValueDate_" + CUST.DATA.SrlNum))
+		print(("BANCS").("INPUT").("CrncyCd_" + CUST.DATA.SrlNum))
+		print(("BANCS").("INPUT").("TranRmks_" + CUST.DATA.SrlNum))
+		
+	    
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.key.serial_num|" + CUST.DATA.SrlNum)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.acctId.foracid|" + CUST.DATA.AcctNm)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.partTranType.code|" + CUST.DATA.DebitCredit)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.tranAmt|" + CUST.DATA.TranAmt + "|"+ CUST.DATA.CrncyCd)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.tranParticulars|" + CUST.DATA.TranPart)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.valueDate|" + CUST.DATA.ValueDate +" 00:00:00")
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.acctId.crncyCode|" + CUST.DATA.CrncyCd)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.tranCrncyCode.crncyCode|"+ CUST.DATA.CrncyCd)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.refCrncyCode.crncyCode|"+ CUST.DATA.CrncyCd)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.glDate|"+ BANCS.STDIN.BODDate)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.tranRmks|" + CUST.DATA.TranRmks)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.refAmt|"+ CUST.DATA.TranAmt + "|" + CUST.DATA.CrncyCd)
+		sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.entryUserId.userId|" + BANCS.STDIN.userId)
+		
+		if(CUST.DATA.InstType != "")then
+		#{
+			
+			sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.instrmnt.instrmntType|" + CUST.DATA.InstType)
+			sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.instrmnt.instrmntDate|" + CUST.DATA.InstDate +" 00:00:00")
+			sv_a = urhk_SetUrhkInp("tranDtl.partTranDetailLL.<rec_" + CUST.DATA.SrlNumLp + ">.instrmnt.instrmntNum|" + CUST.DATA.InstNo)
+		#}
+		ENDIF
+		
+		IF((CUST.DATA.DebitCredit == "D") AND(CUST.DATA.AcctNumDD == ""))THEN
+		#{
+			CUST.DATA.AcctNumDD = CUST.DATA.AcctNm
+		#}
+		ENDIF
+		
+		NOMAIN01:
+			CUST.DATA.TotalCk = cint(CUST.DATA.TotalCk) - 1
+			CUST.DATA.SrlNum = cint(CUST.DATA.SrlNum) + 1
+			CUST.DATA.SrlNumLp = cint(CUST.DATA.SrlNumLp) + 1
+			print(CUST.DATA.TotalCk)
+	#}
+	DO
+	
+	sv_a = urhk_SetUrhkOut("tranDtl.tranIdentifier.tranId|tranId")
+	PRINT(sv_a)
+	sv_a = urhk_SetUrhkOut("tranDtl.tranIdentifier.tranDate|tranDate")
+	PRINT(sv_a)
+	sv_s = urhk_ExecSrv("SRV_AddTransferTran|retain_all_output = Y|same_user_verify = Y")
+	#sv_s = urhk_ExecSrv("SRV_CreateAndPostTransferTran|retain_all_output = Y|same_user_verify = Y")
+	PRINT (sv_s)
+	IF (sv_s != 0) THEN
+	#{
+		#CUST.DATA.stage = "WHILE creating Deposit Tran. for "+ CUST.DATA.acctNum
+		GOTO CATCHERROR
+	#}
+	ELSE
+	#{
+		CUST.DATA.transaction = BANCS.OUTPARAM.tranId
+		PRINT(CUST.DATA.transaction)
+		CUST.DATA.TranDate = BANCS.OUTPARAM.tranDate
+		PRINT(CUST.DATA.TranDate)
+		CUST.DATA.txnids = CUST.DATA.transaction
+		CUST.DATA.tranId2 = ""
+	#}
+	ENDIF
+	
+	verify:
+	# Fetch the transaction for posting
+	sv_u = urhk_SetUrhkInp("tranDtl.tranIdentifier.tranId|" + CUST.DATA.transaction)
+	sv_u = urhk_SetUrhkInp("tranDtl.tranIdentifier.tranDate|" + CUST.DATA.TranDate)
+	sv_s = urhk_ExecSrv("SRV_FetchTransferTranForPost|retain_all_output = Y")
+	PRINT(sv_s)
+	IF (sv_s != 0) THEN
+	#{
+		CUST.DATA.stage = "WHILE posting Deposit Tran:" + CUST.DATA.transaction
+		GOTO CATCHERROR
+	#}
+	ENDIF
+	
+	sv_u = urhk_CopyOutToIn("")
+	sv_v = urhk_SetUrhkInp("tranDtl.tranIdentifier.tranId|" + CUST.DATA.transaction)
+	sv_v = urhk_SetUrhkInp("tranDtl.tranIdentifier.tranDate|" + CUST.DATA.TranDate)
+	sv_s = urhk_ExecSrv("SRV_PostTransferTran|retain_all_output = Y")
+	PRINT(sv_s)
+	
+	IF (sv_s != 0) THEN
+	#{
+		sv_u = urhk_CopyOutToIn("")
+		sv_v = urhk_SetUrhkInp("tranDtl.tranIdentifier.tranId|" + CUST.DATA.transaction)
+		sv_v = urhk_SetUrhkInp("tranDtl.tranIdentifier.tranDate|" + CUST.DATA.TranDate)
+		sv_s = urhk_ExecSrv("SRV_PostTransferTran|retain_all_output = Y")
+		PRINT(sv_s)
+		IF (sv_s != 0) THEN
+		#{
+			GOTO CATCHERROR
+		#}
+		ENDIF
+	#}
+	ENDIF
+	
+	sv_q = "EffBal,ClrBal,CrncyCd,TlDbtAmt,TlCrAmt,BankId|select to_char(((CLR_BAL_AMT + SANCT_LIM) - (lien_amt + SYSTEM_RESERVED_AMT)),'999,999,999,999,999,999.99') "
+	sv_q = sv_q + " eff_bal, to_char(CLR_BAL_AMT,'999,999,999,999,999,999.99'),acct_crncy_code, "
+	sv_q = sv_q + " to_char(CUM_DR_AMT,'999,999,999,999,999,999.99'),to_char(CUM_CR_AMT,'999,999,999,999,999,999.99'),bank_id from tbaadm.gam where foracid = '" + CUST.DATA.AcctNumDD + "'"
+	print(sv_q)
+	sv_q = urhk_dbselectWithBind(sv_q)
+	IF (sv_q != 0) THEN
+	#{
+		sv_v="result|SUCCESS"
+		sv_o=urhk_SetOrbOut(sv_v)
+		sv_v="Action_Code|000"
+		sv_o=urhk_SetOrbOut(sv_v)
+		sv_v="TranID|" + CUST.DATA.transaction
+		sv_o=urhk_SetOrbOut(sv_v)
+		sv_v="TranDate|" + CUST.DATA.TranDate
+		sv_o=urhk_SetOrbOut(sv_v)
+		EXITSCRIPT
+	#}
+	ENDIF
+	CUST.DATA.EffBal = BANCS.OUTPARAM.EffBal
+	CUST.DATA.ClrBal = BANCS.OUTPARAM.ClrBal
+	CUST.DATA.CrncyCd = BANCS.OUTPARAM.CrncyCd
+	CUST.DATA.TlDbtAmt = BANCS.OUTPARAM.TlDbtAmt
+	CUST.DATA.TlCrAmt = BANCS.OUTPARAM.TlCrAmt
+	CUST.DATA.BankId = BANCS.OUTPARAM.BankId
+	
+	
+	sv_v="result|SUCCESS"
+	sv_o=urhk_SetOrbOut(sv_v)
+	sv_v="Action_Code|000"
+	sv_o=urhk_SetOrbOut(sv_v)
+	sv_v="TranID|" + CUST.DATA.transaction
+	sv_o=urhk_SetOrbOut(sv_v)
+	sv_v="TranDate|" + CUST.DATA.TranDate
+	sv_o=urhk_SetOrbOut(sv_v)
+	sv_v="Available_Balance|" + CUST.DATA.EffBal
+	sv_o=urhk_SetOrbOut(sv_v)
+	sv_v="Ledger_Balance|" + CUST.DATA.ClrBal
+	sv_o=urhk_SetOrbOut(sv_v)
+	sv_v="Balance_Currency|" + CUST.DATA.CrncyCd
+	sv_o=urhk_SetOrbOut(sv_v)
+	sv_v="TotalDebitAmount|" + CUST.DATA.TlDbtAmt
+	sv_o=urhk_SetOrbOut(sv_v)
+	sv_v="TotalCreditAmount|" + CUST.DATA.TlCrAmt
+	sv_o=urhk_SetOrbOut(sv_v)
+	sv_v="Country_Code|" + CUST.DATA.BankId
+	sv_o=urhk_SetOrbOut(sv_v)
+	EXITSCRIPT
+	
+	CATCHERROR:
+		CALL("trackError.scr")
+		CUST.DATA.ErrMsg = sv_v
+		
+		sv_v = urhk_SetOrbOut("SuccessOrFailure|N")
+		sv_v="result|FAILED"
+		sv_o=urhk_SetOrbOut(sv_v)
+		sv_k="ErrMsg| " + CUST.DATA.ErrMsg
+		sv_y=urhk_SetOrbOut(sv_k)
+		sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+		EXITSCRIPT	
+trace off
+end-->
