@@ -1,0 +1,359 @@
+#============================================================
+# IMPORTANT: Auto Generated Header. DO NOT CHANGE MANUALLY.
+# Product: Finacle Core
+# Category: Event Based
+# Script: simact003.scr
+# Type: ACHCI|default
+# Description: ACHCI - ACHCI
+# Modification Log:
+#============================================================
+
+<--START
+CHECKSUM="53e1c3fd4e45a6cdf1bc290d658f85bac9476649b4bcaa543b710cf1ccd2178e"
+	# Script body goes here
+	TRACE ON
+	LIBNAME CUSTOMSO
+	sv_a = urhk_B2K_printRepos("BANCS")
+	
+	################################
+	# Creation of  Repositories and Classes
+	#################################
+	IF (REPEXISTS("CUSTUBA")==0) THEN
+	#{
+		CREATEREP("CUSTUBA")
+	#}
+	ENDIF
+	###########################
+	# Creation of  String type  Class
+	###########################
+	IF (CLASSEXISTS("CUSTUBA","SIMDEP")==0) THEN
+	#{
+		CREATECLASS("CUSTUBA","SIMDEP",5)
+		#}
+	ELSE
+		#{
+		DELETECLASS("CUSTUBA","SIMDEP")
+		CREATECLASS("CUSTUBA","SIMDEP",5)
+	#}
+	ENDIF
+	CUSTUBA.SIMDEP.creatDate = BANCS.INPUT.creatDate_ui
+	CUSTUBA.SIMDEP.funcCode = BANCS.INPUT.funcCode
+	CUSTUBA.SIMDEP.acctTyp = BANCS.INPUT.acctTyp
+	##kami
+	CUSTUBA.SIMDEP.chqreq = BANCS.INPUT.chqreq
+	CUSTUBA.SIMDEP.legal = BANCS.INPUT.legal
+	CUSTUBA.SIMDEP.cardiss = BANCS.INPUT.cardiss
+	CUSTUBA.SIMDEP.cheqb = BANCS.INPUT.cheqb
+	CUSTUBA.SIMDEP.conleg = BANCS.INPUT.conleg
+	CUSTUBA.SIMDEP.conchq = BANCS.INPUT.conchq
+	CUSTUBA.SIMDEP.concard = BANCS.INPUT.concard
+	CUSTUBA.SIMDEP.noOfLeaves = BANCS.INPUT.noOfLeaves
+	##kami
+	CUSTUBA.SIMDEP.biometId = BANCS.INPUT.biometId
+	CUSTUBA.SIMDEP.tempAcct = BANCS.INPUT.tempAcct
+	CUSTUBA.SIMDEP.corpName = BANCS.INPUT.corpName
+	CUSTUBA.SIMDEP.title = BANCS.INPUT.title
+	CUSTUBA.SIMDEP.firstNam = BANCS.INPUT.firstNam
+	CUSTUBA.SIMDEP.DOB = BANCS.INPUT.DOB
+	CUSTUBA.SIMDEP.midName = BANCS.INPUT.midName
+	CUSTUBA.SIMDEP.emailAdd = BANCS.INPUT.emailAdd
+	CUSTUBA.SIMDEP.lastNam = BANCS.INPUT.lastNam
+	CUSTUBA.SIMDEP.phonNum1 = BANCS.INPUT.phonNum1
+	CUSTUBA.SIMDEP.phonNum2 = BANCS.INPUT.phonNum2
+	CUSTUBA.SIMDEP.phonNum3 = BANCS.INPUT.phonNum3
+	CUSTUBA.SIMDEP.fullNam = BANCS.INPUT.fullNam
+	CUSTUBA.SIMDEP.natId = BANCS.INPUT.natId
+	CUSTUBA.SIMDEP.acctPrefName = BANCS.INPUT.natId
+	CUSTUBA.SIMDEP.sHold = BANCS.INPUT.sHold
+	CUSTUBA.SIMDEP.custExst = BANCS.INPUT.custExst
+	CUSTUBA.SIMDEP.sig = BANCS.INPUT.sig
+	CUSTUBA.SIMDEP.dir = BANCS.INPUT.dir
+	CUSTUBA.SIMDEP.acctHold = BANCS.INPUT.acctHold
+	CUSTUBA.SIMDEP.acctCcy = BANCS.INPUT.acctCcy
+	CUSTUBA.SIMDEP.jtAcctFlg = BANCS.INPUT.jtAcctFlg
+	CUSTUBA.SIMDEP.gender = BANCS.INPUT.gender
+	CUSTUBA.SIMDEP.nonResInd = BANCS.INPUT.nonResInd
+	CUSTUBA.SIMDEP.maritStat = BANCS.INPUT.maritStat
+	CUSTUBA.SIMDEP.cntryOfRes1 = BANCS.INPUT.cntryOfRes1
+	CUSTUBA.SIMDEP.cntryOfRes2 = BANCS.INPUT.cntryOfRes2
+	CUSTUBA.SIMDEP.cntryOfBth1 = BANCS.INPUT.cntryOfBth1
+	CUSTUBA.SIMDEP.cntryOfBth2 = BANCS.INPUT.cntryOfBth2
+	CUSTUBA.SIMDEP.turnNonRes_ui = BANCS.INPUT.turnNonRes_ui
+	CUSTUBA.SIMDEP.nation1 = BANCS.INPUT.nation1
+	CUSTUBA.SIMDEP.nation2 = BANCS.INPUT.nation2
+	CUSTUBA.SIMDEP.usPers = BANCS.INPUT.usPers
+	CUSTUBA.SIMDEP.statOfOrig = BANCS.INPUT.statOfOrig
+	CUSTUBA.SIMDEP.PEPFlg = BANCS.INPUT.PEPFlg
+	CUSTUBA.SIMDEP.lclGovt = BANCS.INPUT.lclGovt
+	CUSTUBA.SIMDEP.PEPRltnshp = BANCS.INPUT.PEPRltnshp
+	CUSTUBA.SIMDEP.KYCInd = BANCS.INPUT.KYCInd
+	CUSTUBA.SIMDEP.otherRltnshp = BANCS.INPUT.otherRltnshp
+	CUSTUBA.SIMDEP.equalOrGreater = BANCS.INPUT.equalOrGreater
+	CUSTUBA.SIMDEP.staffInd = BANCS.INPUT.staffInd
+	CUSTUBA.SIMDEP.resOrCitiz = BANCS.INPUT.resOrCitiz
+	CUSTUBA.SIMDEP.relMngrId = BANCS.INPUT.relMngrId
+	CUSTUBA.SIMDEP.shrtNam = BANCS.INPUT.shrtNam
+	#CUSTUBA.SIMDEP.minorInd = BANCS.INPUT.minorInd
+	IF (FIELDEXISTS(BANCS.INPUT.Minor) == 0) THEN
+	#{
+		BANCS.INPUT.Minor = BANCS.INPUT.minorInd
+	#}
+	ENDIF
+	CUSTUBA.SIMDEP.minorInd = BANCS.INPUT.Minor
+	CUSTUBA.SIMDEP.snrCitiz = BANCS.INPUT.snrCitiz
+	CUSTUBA.SIMDEP.priSolId = BANCS.INPUT.priSolId
+	CUSTUBA.SIMDEP.solName = BANCS.INPUT.solName
+	CUSTUBA.SIMDEP.addValFrm = BANCS.INPUT.addValFrm
+	CUSTUBA.SIMDEP.relStrtDate = BANCS.INPUT.relStrtDate
+	CUSTUBA.SIMDEP.streetNo = BANCS.INPUT.streetNo
+	CUSTUBA.SIMDEP.occup = BANCS.INPUT.occup
+	CUSTUBA.SIMDEP.city1 = BANCS.INPUT.city1
+	CUSTUBA.SIMDEP.city2 = BANCS.INPUT.city2
+	CUSTUBA.SIMDEP.empType = BANCS.INPUT.empType
+	CUSTUBA.SIMDEP.state1 = BANCS.INPUT.state1
+	CUSTUBA.SIMDEP.state2 = BANCS.INPUT.state2
+	CUSTUBA.SIMDEP.segmnt1 = BANCS.INPUT.segmnt1
+	CUSTUBA.SIMDEP.segmnt2 = BANCS.INPUT.segmnt2
+	CUSTUBA.SIMDEP.cntry1 = BANCS.INPUT.cntry1
+	CUSTUBA.SIMDEP.cntry2 = BANCS.INPUT.cntry2
+	CUSTUBA.SIMDEP.subSegmnt = BANCS.INPUT.subSegmnt
+	CUSTUBA.SIMDEP.pstCode = BANCS.INPUT.pstCode
+	CUSTUBA.SIMDEP.natOfBiz = BANCS.INPUT.natOfBiz
+	CUSTUBA.SIMDEP.typOfId = BANCS.INPUT.typOfId
+	CUSTUBA.SIMDEP.typOfCode = BANCS.INPUT.typOfCode
+	CUSTUBA.SIMDEP.intBank = BANCS.INPUT.intBank
+	CUSTUBA.SIMDEP.eStatmnt = BANCS.INPUT.eStatmnt
+	CUSTUBA.SIMDEP.taxIdNo = BANCS.INPUT.taxIdNo
+	CUSTUBA.SIMDEP.taxIdNo2 = BANCS.INPUT.taxIdNo2
+	CUSTUBA.SIMDEP.mobBank = BANCS.INPUT.mobBank
+	CUSTUBA.SIMDEP.freq = BANCS.INPUT.freq
+	CUSTUBA.SIMDEP.plcOfIssu = BANCS.INPUT.plcOfIssu
+	CUSTUBA.SIMDEP.smsAlrt = BANCS.INPUT.smsAlrt
+	CUSTUBA.SIMDEP.rmId = BANCS.INPUT.rmId
+	CUSTUBA.SIMDEP.issuDate_ui = BANCS.INPUT.issuDate_ui
+	CUSTUBA.SIMDEP.emailAlrt = BANCS.INPUT.emailAlrt
+	CUSTUBA.SIMDEP.expDate_ui = BANCS.INPUT.expDate_ui
+	CUSTUBA.SIMDEP.dbtCard = BANCS.INPUT.dbtCard
+	CUSTUBA.SIMDEP.regNo = BANCS.INPUT.regNo
+	CUSTUBA.SIMDEP.prefNam = BANCS.INPUT.prefNam
+	CUSTUBA.SIMDEP.prntCoy = BANCS.INPUT.prntCoy
+	CUSTUBA.SIMDEP.sect = BANCS.INPUT.sect
+	CUSTUBA.SIMDEP.subSect = BANCS.INPUT.subSect
+	CUSTUBA.SIMDEP.cntryOfInc = BANCS.INPUT.cntryOfInc
+	CUSTUBA.SIMDEP.avgAnnIncm = BANCS.INPUT.avgAnnIncm
+	CUSTUBA.SIMDEP.SCUMReg = BANCS.INPUT.SCUMReg
+	CUSTUBA.SIMDEP.CRMNo = BANCS.INPUT.CRMNo
+	CUSTUBA.SIMDEP.resPermNo = BANCS.INPUT.resPermNo
+	CUSTUBA.SIMDEP.namOfPEP = BANCS.INPUT.namOfPEP
+	CUSTUBA.SIMDEP.addType = BANCS.INPUT.addType
+	CUSTUBA.SIMDEP.issuAuthort = BANCS.INPUT.issuAuthort
+	CUSTUBA.SIMDEP.schmCode = BANCS.INPUT.schmCode
+	CUSTUBA.SIMDEP.GSHCode = BANCS.INPUT.GSHCode
+	CUSTUBA.SIMDEP.acctOfRef = BANCS.INPUT.acctOfRef
+	CUSTUBA.SIMDEP.isAcctDocComp = BANCS.INPUT.isAcctDocComp
+	CUSTUBA.SIMDEP.reltdPtyDet = BANCS.INPUT.reltdPtyDet
+	CUSTUBA.SIMDEP.reltdPtyDetCnt = BANCS.INPUT.reltdPtyDetCnt
+	CUSTUBA.SIMDEP.cifIdSelected = BANCS.INPUT.cifIdSelected
+	CUSTUBA.SIMDEP.minReln = BANCS.INPUT.minReln
+	CUSTUBA.SIMDEP.minRelnGDCode = BANCS.INPUT.minRelnGDCode
+	CUSTUBA.SIMDEP.minRelnCifId = BANCS.INPUT.minRelnCifId
+	CUSTUBA.SIMDEP.riskRtg = BANCS.INPUT.riskRtg
+	CUSTUBA.SIMDEP.ccyLength = BANCS.INPUT.ccyLength
+	IF (FIELDEXISTS(BANCS.INPUT.CreAcctFlg) == 0) THEN
+	#{
+		BANCS.INPUT.CreAcctFlg = ""
+	#}
+	ENDIF
+	IF (FIELDEXISTS(BANCS.INPUT.PartyCif) == 0) THEN
+	#{
+		BANCS.INPUT.PartyCif = ""
+	#}
+	ENDIF
+	IF (FIELDEXISTS(BANCS.INPUT.PartyCd) == 0) THEN
+	#{
+		BANCS.INPUT.PartyCd = ""
+	#}
+	ENDIF
+	IF (FIELDEXISTS(BANCS.INPUT.PartyCnt) == 0) THEN
+	#{
+		BANCS.INPUT.PartyCnt = ""
+	#}
+	ENDIF
+	IF (FIELDEXISTS(BANCS.INPUT.OrgNm) == 0) THEN
+	#{
+		BANCS.INPUT.OrgNm = ""
+	#}
+	ENDIF
+	IF (FIELDEXISTS(BANCS.INPUT.addrsearch) == 0) THEN
+	#{
+		BANCS.INPUT.addrsearch = ""
+	#}
+	ENDIF
+	IF (FIELDEXISTS(BANCS.INPUT.salaryAcctFlg) == 0) THEN
+	#{
+		BANCS.INPUT.salaryAcctFlg = ""
+	#}
+	ENDIF
+	IF (FIELDEXISTS(BANCS.INPUT.NwOrgNm) == 0) THEN
+	#{
+		BANCS.INPUT.NwOrgNm = ""
+	#}
+	ENDIF
+	CUSTUBA.SIMDEP.CreAcctFlg = BANCS.INPUT.CreAcctFlg
+	CUSTUBA.SIMDEP.PartyCif = BANCS.INPUT.PartyCif
+	CUSTUBA.SIMDEP.PartyCd = BANCS.INPUT.PartyCd
+	CUSTUBA.SIMDEP.PartyCnt = BANCS.INPUT.PartyCnt
+	CUSTUBA.SIMDEP.OrgNm = BANCS.INPUT.OrgNm
+	CUSTUBA.SIMDEP.addrsearch = BANCS.INPUT.addrsearch
+	CUSTUBA.SIMDEP.salaryAcctFlg = BANCS.INPUT.salaryAcctFlg
+	CUSTUBA.SIMDEP.NwOrgNm = BANCS.INPUT.NwOrgNm
+	
+	CUSTUBA.SIMDEP.retSect = BANCS.INPUT.retSect
+	CUSTUBA.SIMDEP.retSubSect = BANCS.INPUT.retSubSect
+	PRINT(CUSTUBA.SIMDEP.retSect)
+	PRINT(CUSTUBA.SIMDEP.retSubSect)
+	
+	CUSTUBA.SIMDEP.acctCcy2 = BANCS.INPUT.acctCcy2 +","
+	sv_i = GETPOSITION(CUSTUBA.SIMDEP.acctCcy2,",")
+	PRINT(sv_i)
+	CUSTUBA.SIMDEP.acctCcy = mid$(CUSTUBA.SIMDEP.acctCcy2,0,sv_i - 1)
+	PRINT(CUSTUBA.SIMDEP.acctCcy)
+	
+	IF ((CUSTUBA.SIMDEP.schmCode == "CASTF") OR (CUSTUBA.SIMDEP.schmCode == "SBSTF"))THEN
+	#{
+		CUSTUBA.SIMDEP.solId = "0999"
+	#}
+	ELSE
+	#{
+		CUSTUBA.SIMDEP.solId = BANCS.STDIN.mySolId
+	#}
+	ENDIF
+	
+	CUSTUBA.SIMDEP.fiDOB = mid$(CUSTUBA.SIMDEP.DOB,6,4)+"-"+mid$(CUSTUBA.SIMDEP.DOB,3,2)+"-"+mid$(CUSTUBA.SIMDEP.DOB,0,2)
+	PRINT(CUSTUBA.SIMDEP.fiDOB)
+	CUSTUBA.SIMDEP.fiRelStrtDate = mid$(CUSTUBA.SIMDEP.relStrtDate,6,4)+"-"+mid$(CUSTUBA.SIMDEP.relStrtDate,3,2)+"-"+mid$(CUSTUBA.SIMDEP.relStrtDate,0,2)
+	PRINT(CUSTUBA.SIMDEP.fiRelStrtDate)
+	#CUSTUBA.SIMDEP.fiStrtDate = mid$(BANCS.STDIN.BODDate,6,4)+"-"+mid$(BANCS.STDIN.BODDate,3,2)+"-"+mid$(BANCS.STDIN.BODDate,0,2)
+	CUSTUBA.SIMDEP.fiStrtDate = mid$(BANCS.STDIN.sysDate,6,4)+"-"+mid$(BANCS.STDIN.sysDate,3,2)+"-"+mid$(BANCS.STDIN.sysDate,0,2)
+	PRINT(CUSTUBA.SIMDEP.fiStrtDate)
+	CUSTUBA.SIMDEP.fiIssuDate = mid$(BANCS.INPUT.issuDate_ui,6,4)+"-"+mid$(BANCS.INPUT.issuDate_ui,3,2)+"-"+mid$(BANCS.INPUT.issuDate_ui,0,2)
+	PRINT(CUSTUBA.SIMDEP.fiIssuDate)
+	CUSTUBA.SIMDEP.fiturnNonRes_ui = mid$(CUSTUBA.SIMDEP.turnNonRes_ui,6,4)+"-"+mid$(CUSTUBA.SIMDEP.turnNonRes_ui,3,2)+"-"+mid$(CUSTUBA.SIMDEP.turnNonRes_ui,0,2)
+	PRINT(CUSTUBA.SIMDEP.fiturnNonRes_ui)
+	IF (CUSTUBA.SIMDEP.expDate_ui != "")THEN
+	#{
+		CUSTUBA.SIMDEP.fiexpDate = mid$(CUSTUBA.SIMDEP.expDate_ui,6,4)+"-"+mid$(CUSTUBA.SIMDEP.expDate_ui,3,2)+"-"+mid$(CUSTUBA.SIMDEP.expDate_ui,0,2)
+		PRINT(CUSTUBA.SIMDEP.fiexpDate)
+	#}
+	ENDIF
+	sv_a = "schmType|select schm_type from tbaadm.gsp where schm_code=?SVAR AND bank_id=?SVAR"
+	BANCS.INPARAM.BINDVARS = CUSTUBA.SIMDEP.schmCode+"|"+BANCS.STDIN.contextBankId
+	sv_b = urhk_dbSelectWithBind(sv_a)
+	PRINT(sv_b)
+	IF (sv_b != 0)THEN
+	#{
+		PRINT("Replacement error")
+		#}
+	ELSE
+		#{
+		CUSTUBA.SIMDEP.schmType = BANCS.OUTPARAM.schmType
+		PRINT(CUSTUBA.SIMDEP.schmType)
+	#}
+	ENDIF
+	
+	IF((CUSTUBA.SIMDEP.OrgNm == "OTHERS") OR (CUSTUBA.SIMDEP.OrgNm == "OTHER")) THEN
+	#{
+		CUSTUBA.SIMDEP.OrgNm = CUSTUBA.SIMDEP.NwOrgNm
+		sv_a = "cnt|select count(*) from custom.gsimact_organisation where org_name = '" + CUSTUBA.SIMDEP.OrgNm + "' and bank_id = '" + BANCS.STDIN.contextBankId + "' "
+		print(sv_a)
+		sv_b = urhk_dbSelectWithBind(sv_a)
+		PRINT(sv_b)
+		IF (sv_b != 0)THEN
+		#{
+			PRINT("Replacement error")
+			#}
+		ELSE
+			#{
+			CUSTUBA.SIMDEP.cnt = BANCS.OUTPARAM.cnt
+			PRINT(CUSTUBA.SIMDEP.cnt)
+			IF(CINT(CUSTUBA.SIMDEP.cnt) == CINT("0"))THEN
+			#{
+				sv_a = "insert into custom.gsimact_organisation (org_name,del_flg,bank_id,LCHG_USER_ID,LCHG_TIME) values "
+				sv_a = sv_a + " ('" + CUSTUBA.SIMDEP.OrgNm + "','N','" + BANCS.STDIN.contextBankId + "', "
+				sv_a = sv_a + " '" + BANCS.STDIN.userId + "',sysdate) "
+				print(sv_a)
+				sv_b = urhk_dbsqlWithBind(sv_a)
+				PRINT(sv_b)
+				IF (sv_b == 0)  THEN
+				#{
+					sv_b =urhk_dbsqlWithBind("commit")
+				#}
+				ENDIF
+			#}
+			ENDIF
+		#}
+		ENDIF
+	#}
+	ENDIF
+	
+	IF ((CUSTUBA.SIMDEP.funcCode == "J") AND (CUSTUBA.SIMDEP.acctTyp == "R") AND (CUSTUBA.SIMDEP.custExst == "N"))THEN
+	#{
+		CALL("simactCreRet.scr")
+		EXITSCRIPT
+	#}
+	ENDIF
+	IF ((CUSTUBA.SIMDEP.funcCode == "J") AND (CUSTUBA.SIMDEP.acctTyp == "C") AND (CUSTUBA.SIMDEP.custExst == "N"))THEN
+	#{
+		#kanmi
+		PRINT(CUSTUBA.SIMDEP.chqreq)
+		PRINT(CUSTUBA.SIMDEP.legal)
+		PRINT(CUSTUBA.SIMDEP.cardiss)
+		PRINT(CUSTUBA.SIMDEP.cheqb)
+		PRINT(CUSTUBA.SIMDEP.conleg)
+		PRINT(CUSTUBA.SIMDEP.conchq)
+		PRINT(CUSTUBA.SIMDEP.concard)
+		PRINT(CUSTUBA.SIMDEP.noOfLeaves)
+		#kanmi
+		
+		CALL("simactCreCorp.scr")
+		EXITSCRIPT
+	#}
+	ENDIF
+	IF (CUSTUBA.SIMDEP.funcCode == "V")THEN
+	#{
+		CALL("simAcctOpnVerify.scr")
+		EXITSCRIPT
+	#}
+	ENDIF
+	IF (CUSTUBA.SIMDEP.funcCode == "X")THEN
+	#{
+		CALL("simAcctOpnDelete.scr")
+		EXITSCRIPT
+	#}
+	ENDIF
+	IF ((CUSTUBA.SIMDEP.funcCode == "M") AND (CUSTUBA.SIMDEP.acctTyp == "R") AND ((CUSTUBA.SIMDEP.custExst == "N") OR (CUSTUBA.SIMDEP.custExst == "Y")))THEN
+	#{
+		CALL("simactRetModify.scr")
+		EXITSCRIPT
+	#}
+	ENDIF
+	IF ((CUSTUBA.SIMDEP.funcCode == "M") AND (CUSTUBA.SIMDEP.acctTyp == "C") AND ((CUSTUBA.SIMDEP.custExst == "N") OR (CUSTUBA.SIMDEP.custExst == "Y")))THEN
+	#{
+		CALL("simactCorpModify.scr")
+		EXITSCRIPT
+	#}
+	ENDIF
+	IF ((CUSTUBA.SIMDEP.funcCode == "J") AND (CUSTUBA.SIMDEP.acctTyp == "R") AND (CUSTUBA.SIMDEP.custExst == "Y"))THEN
+	#{
+		CALL("simactRetModify.scr")
+		EXITSCRIPT
+	#}
+	ENDIF
+	IF ((CUSTUBA.SIMDEP.funcCode == "J") AND (CUSTUBA.SIMDEP.acctTyp == "C") AND (CUSTUBA.SIMDEP.custExst == "Y"))THEN
+	#{
+		CALL("simactCorpModify.scr")
+		EXITSCRIPT
+	#}
+	ENDIF
+	EXITSCRIPT
+END-->
