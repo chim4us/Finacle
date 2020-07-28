@@ -1,0 +1,76 @@
+<--START
+	TRACE ON
+
+	###################################################
+	###########Sector searcher
+	####################################################
+	CUSTUBA.SIMDEP.category = BANCS.INPUT.category
+	CUSTUBA.SIMDEP.type = BANCS.INPUT.type
+	
+	sv_a = "count|select count(*) from crmuser.categories a ,crmuser.categorY_LANG b "
+	sv_a = sv_a + " where a.CATEGORYID=b.CATEGORYID AND a.bank_id=b.bank_id "
+	sv_a = sv_a + " AND a.CATEGORYTYPE = ?SVAR and regexp_replace(LOCALETEXT,'''') in (select distinct STATE from custom.state_lga_map where bank_id = 'NG') "
+	sv_a = sv_a + " AND a.bank_id = ?SVAR order by VALUE"
+	PRINT(sv_a)
+	BANCS.INPARAM.BINDVARS= CUSTUBA.SIMDEP.category+"|"+BANCS.STDIN.contextBankId
+	sv_i=urhk_dbSelectWithBind(sv_a)
+	PRINT(sv_i)
+	PRINT(BANCS.OUTPARAM.count)
+	
+	IF (BANCS.OUTPARAM.count == 0) THEN
+	#{
+		sv_u    =   urhk_SetOrbOut("recCount|0")
+		EXITSCRIPT
+		#}
+	ELSE
+		#{
+		sv_u  =  urhk_SetOrbOut("recCount|"+BANCS.OUTPARAM.count)
+		
+		sv_a = "sector,sectorDesc|"
+		sv_a = sv_a + " select VALUE,regexp_replace(LOCALETEXT,'''') from crmuser.categories a ,crmuser.categorY_LANG b "
+		sv_a = sv_a + " where a.CATEGORYID=b.CATEGORYID AND a.bank_id=b.bank_id "
+		sv_a = sv_a + " AND a.CATEGORYTYPE  = ?SVAR and regexp_replace(LOCALETEXT,'''') in (select distinct STATE from custom.state_lga_map where bank_id = 'NG') "
+		sv_a = sv_a + " AND a.bank_id = ?SVAR order by VALUE"
+		PRINT(sv_a)
+		BANCS.INPARAM.BINDVARS= CUSTUBA.SIMDEP.category+"|"+BANCS.STDIN.contextBankId
+		sv_b = urhk_dbCursorOpenWithBind(sv_a)
+		PRINT(sv_b)
+		
+		sv_z=BANCS.OUTPARAM.DB_CURSOR_NUMBER
+		PRINT(sv_z)
+		IF(sv_b==0) THEN
+		#{
+			sv_c =urhk_dbcursorfetch(sv_z)
+			PRINT(sv_c)
+			sv_j = 1
+			sv_i = format$(sv_j, "%d")
+			WHILE(sv_c==0)
+			#{
+				CUSTUBA.SIMDEP.sector = BANCS.OUTPARAM.sector
+				CUSTUBA.SIMDEP.sectorDesc = BANCS.OUTPARAM.sectorDesc
+				
+				PRINT(CUSTUBA.SIMDEP.sector)
+				PRINT(CUSTUBA.SIMDEP.sectorDesc)
+				
+				sv_s="sector_" + sv_i + "|" + CUSTUBA.SIMDEP.sector
+				PRINT(sv_s)
+				sv_u = urhk_SetOrbOut(sv_s)
+				sv_s="sectorDesc_" + sv_i + "|" + CUSTUBA.SIMDEP.sectorDesc
+				PRINT(sv_s)
+				sv_u = urhk_SetOrbOut(sv_s)
+				
+				sv_i=CINT(sv_i)
+				sv_w= sv_i + 1
+				sv_i = FORMAT$ (sv_w, "%d")
+				sv_c=urhk_dbcursorfetch(sv_z)
+			#}
+			DO
+			sv_y=urhk_dbcursorclose(sv_z)
+		#}
+		ENDIF
+	#}
+	ENDIF
+	EXITSCRIPT
+		
+	TRACE OFF
+END-->
