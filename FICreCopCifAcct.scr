@@ -1,0 +1,981 @@
+#============================================================
+# IMPORTANT: Auto Generated Header. DO NOT CHANGE MANUALLY.
+# Product: Finacle Core
+# Category: Event Based
+# Script: FICreCopCifAcct.scr
+# Type: ACHCI|default
+# Description: ACHCI - ACHCI
+# Author: Adewale.Adelekun
+# Date: 06/07/20 17:00
+# Modification Log:
+#============================================================
+
+<--START
+CHECKSUM="fb3fa8f8ffca0068601c88ed4a6fdc2daf40da7e6cd5d432e19c978141d04407"
+	# Script body goes here
+	TRACE ON
+	sv_y = urhk_B2k_PrintRepos("BANCS")
+	PRINT(sv_y)
+	LIBNAME CUSTOMSO
+	################################
+	# Creation of  Repositories and Classes
+	#################################
+	IF (REPEXISTS("CUSTUBA")==0) THEN
+	#{
+		CREATEREP("CUSTUBA")
+	#}
+	ENDIF
+	
+	###########################
+	# Creation of  String type  Class
+	###########################
+	IF (CLASSEXISTS("CUSTUBA","ACCTCRE")==0) THEN
+	#{
+		CREATECLASS("CUSTUBA","ACCTCRE",5)
+	#}
+	ENDIF
+	#=============================INITIALIZATION =======================
+	CUSTUBA.ACCTCRE.creatDate = 		""
+	CUSTUBA.ACCTCRE.funcCode =  		""
+	CUSTUBA.ACCTCRE.acctTyp =   		""
+	CUSTUBA.ACCTCRE.biometId =  		""
+	CUSTUBA.ACCTCRE.tempAcct =  		""
+	CUSTUBA.ACCTCRE.corpName =  		""
+	CUSTUBA.ACCTCRE.title = 	 		""
+	CUSTUBA.ACCTCRE.firstNam =  		""
+	CUSTUBA.ACCTCRE.DOB = 		 		""
+	CUSTUBA.ACCTCRE.midName =   		""
+	CUSTUBA.ACCTCRE.emailAdd =  		""
+	CUSTUBA.ACCTCRE.lastNam =   		""
+	CUSTUBA.ACCTCRE.phonNum1 =  		""
+	CUSTUBA.ACCTCRE.phonNum2 =  		""
+	CUSTUBA.ACCTCRE.phonNum3 =  		""
+	CUSTUBA.ACCTCRE.fullNam = 	 		""
+	CUSTUBA.ACCTCRE.natId = 	 		""
+	CUSTUBA.ACCTCRE.acctPrefName = 	""
+	CUSTUBA.ACCTCRE.sHold = 			""
+	CUSTUBA.ACCTCRE.custExst = 		""
+	CUSTUBA.ACCTCRE.sig = 				""
+	CUSTUBA.ACCTCRE.dir = 				""
+	CUSTUBA.ACCTCRE.acctHold =     	""
+	CUSTUBA.ACCTCRE.acctCcy =			""
+	CUSTUBA.ACCTCRE.jtAcctFlg = 		""
+	CUSTUBA.ACCTCRE.gender = 			""
+	CUSTUBA.ACCTCRE.nonResInd = 		""
+	CUSTUBA.ACCTCRE.maritStat = 		""
+	CUSTUBA.ACCTCRE.cntryOfRes1 =  	""
+	CUSTUBA.ACCTCRE.cntryOfRes2 =  	""
+	CUSTUBA.ACCTCRE.cntryOfBth1 =  	""
+	CUSTUBA.ACCTCRE.cntryOfBth2 =  	""
+	CUSTUBA.ACCTCRE.turnNonRes_ui = 	""
+	CUSTUBA.ACCTCRE.nation1 = 			""
+	CUSTUBA.ACCTCRE.nation2 = 			""
+	CUSTUBA.ACCTCRE.usPers =  			""
+	CUSTUBA.ACCTCRE.statOfOrig = 		""
+	CUSTUBA.ACCTCRE.PEPFlg = 			""
+	CUSTUBA.ACCTCRE.lclGovt = 			""
+	CUSTUBA.ACCTCRE.PEPRltnshp = 		""
+	CUSTUBA.ACCTCRE.KYCInd = 			""
+	CUSTUBA.ACCTCRE.otherRltnshp = 	""
+	CUSTUBA.ACCTCRE.equalOrGreater = 	""
+	CUSTUBA.ACCTCRE.staffInd = 		""
+	CUSTUBA.ACCTCRE.resOrCitiz = 		""
+	CUSTUBA.ACCTCRE.relMngrId = 		""
+	CUSTUBA.ACCTCRE.shrtNam = 			""
+	CUSTUBA.ACCTCRE.minorInd = 		""
+	CUSTUBA.ACCTCRE.snrCitiz = 		""
+	CUSTUBA.ACCTCRE.priSolId = 		""
+	CUSTUBA.ACCTCRE.solName = 			""
+	CUSTUBA.ACCTCRE.addValFrm =		""
+	CUSTUBA.ACCTCRE.relStrtDate = 		""
+	CUSTUBA.ACCTCRE.streetNo = 		""
+	CUSTUBA.ACCTCRE.occup = 			""
+	CUSTUBA.ACCTCRE.city1 = 			""
+	CUSTUBA.ACCTCRE.city2 = 			""
+	CUSTUBA.ACCTCRE.empType = 			""
+	CUSTUBA.ACCTCRE.state1 =  			""
+	CUSTUBA.ACCTCRE.state2 =  			""
+	CUSTUBA.ACCTCRE.segmnt1 = 			""
+	CUSTUBA.ACCTCRE.segmnt2 = 			""
+	CUSTUBA.ACCTCRE.cntry1 = 			""
+	CUSTUBA.ACCTCRE.cntry2 = 			""
+	CUSTUBA.ACCTCRE.subSegmnt = 		""
+	CUSTUBA.ACCTCRE.pstCode = 			""
+	CUSTUBA.ACCTCRE.natOfBiz =			""
+	CUSTUBA.ACCTCRE.typOfId = 			""
+	CUSTUBA.ACCTCRE.typOfCode = 		""
+	CUSTUBA.ACCTCRE.intBank = 			""
+	CUSTUBA.ACCTCRE.eStatmnt = 		""
+	CUSTUBA.ACCTCRE.taxIdNo = 			""
+	CUSTUBA.ACCTCRE.taxIdNo2 = 		""
+	CUSTUBA.ACCTCRE.mobBank = 			""
+	CUSTUBA.ACCTCRE.freq = 			""
+	CUSTUBA.ACCTCRE.plcOfIssu =	    ""
+	CUSTUBA.ACCTCRE.smsAlrt = 			""
+	CUSTUBA.ACCTCRE.rmId = 			""
+	CUSTUBA.ACCTCRE.issuDate_ui = 		""
+	CUSTUBA.ACCTCRE.emailAlrt = 		""
+	CUSTUBA.ACCTCRE.expDate_ui = 		""
+	CUSTUBA.ACCTCRE.dbtCard = 			""
+	CUSTUBA.ACCTCRE.regNo = 			""
+	CUSTUBA.ACCTCRE.prefNam = 			""
+	CUSTUBA.ACCTCRE.prntCoy = 			""
+	CUSTUBA.ACCTCRE.sect = 			""
+	CUSTUBA.ACCTCRE.subSect = 			""
+	CUSTUBA.ACCTCRE.cntryOfInc = 		""
+	CUSTUBA.ACCTCRE.avgAnnIncm = 		""
+	CUSTUBA.ACCTCRE.SCUMReg = 			""
+	CUSTUBA.ACCTCRE.CRMNo = 			""
+	CUSTUBA.ACCTCRE.resPermNo = 		""
+	CUSTUBA.ACCTCRE.namOfPEP = 		""
+	CUSTUBA.ACCTCRE.addType = 			""
+	CUSTUBA.ACCTCRE.issuAuthort =		""
+	CUSTUBA.ACCTCRE.schmCode = 		""
+	CUSTUBA.ACCTCRE.GSHCode = 			""
+	CUSTUBA.ACCTCRE.acctOfRef = 		""
+	CUSTUBA.ACCTCRE.isAcctDocComp = 	""
+	CUSTUBA.ACCTCRE.reltdPtyDet = 		""
+	CUSTUBA.ACCTCRE.reltdPtyDetCnt = 	""
+	CUSTUBA.ACCTCRE.cifIdSelected = 	""
+	CUSTUBA.ACCTCRE.minReln = 			""
+	CUSTUBA.ACCTCRE.minRelnGDCode = 	""
+	CUSTUBA.ACCTCRE.minRelnCifId = 	""
+	CUSTUBA.ACCTCRE.riskRtg = 			""
+	CUSTUBA.ACCTCRE.ccyLength = 		""
+	CUSTUBA.ACCTCRE.acctCcy2 = 		""
+	#=============================INITIALIZATION ENDS =================
+	
+	#CUSTUBA.ACCTCRE.schmType = "CAA"
+	CUSTUBA.ACCTCRE.combined_stmt_reqd = "N"
+	CUSTUBA.ACCTCRE.calendar_type = "00"
+	CUSTUBA.ACCTCRE.combined_stmtflag = "N"
+	
+	CUSTUBA.ACCTCRE.fiStrtDate = mid$(BANCS.STDIN.sysDate,0,10)
+	PRINT(CUSTUBA.ACCTCRE.fiStrtDate)
+	CUSTUBA.ACCTCRE.RelationShpDate =  mid$(BANCS.STDIN.sysDate,0,10)
+	PRINT(CUSTUBA.ACCTCRE.RelationShpDate)
+	sv_q = "fiStrtDate,RelStDat|select to_char(to_date ('"+CUSTUBA.ACCTCRE.fiStrtDate+"','dd-mm-yyyy'),'yyyy-mm-dd'), "
+	sv_q = sv_q + " to_char(to_date ('"+CUSTUBA.ACCTCRE.RelationShpDate+"','dd-mm-yyyy'),'yyyy-mm-dd') from dual"
+	PRINT(sv_q)
+	sv_d = urhk_dbSelectWithBind(sv_q)
+	IF (sv_d == 0) THEN
+	#{
+		CUSTUBA.ACCTCRE.fiStrtDate = BANCS.OUTPARAM.fiStrtDate
+		PRINT(CUSTUBA.ACCTCRE.fiStrtDate)
+		CUSTUBA.ACCTCRE.RelationShpDate = BANCS.OUTPARAM.RelStDat
+		PRINT(CUSTUBA.ACCTCRE.RelationShpDate)
+	#}
+	ENDIF
+	
+	CUSTUBA.ACCTCRE.fiDOB = mid$(BANCS.STDIN.BODDate,0,10)
+	PRINT(CUSTUBA.ACCTCRE.fiDOB)
+	CUSTUBA.ACCTCRE.fiIssuDate = mid$(BANCS.STDIN.BODDate,0,10)
+	PRINT(CUSTUBA.ACCTCRE.fiIssuDate)
+	
+	
+	IF(FIELDEXISTS(BANCS.INPUT.address_line1)) THEN
+	#{
+		CUSTUBA.ACCTCRE.streetNo  = BANCS.INPUT.address_line1
+		PRINT(CUSTUBA.ACCTCRE.streetNo )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.addresscategory)) THEN
+	#{
+		CUSTUBA.ACCTCRE.addType = BANCS.INPUT.addresscategory
+		PRINT(CUSTUBA.ACCTCRE.addType )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.city)) THEN
+	#{
+		CUSTUBA.ACCTCRE.city1 = BANCS.INPUT.city
+		PRINT(CUSTUBA.ACCTCRE.city1 )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.country)) THEN
+	#{
+		CUSTUBA.ACCTCRE.cntry1 = BANCS.INPUT.country
+		PRINT(CUSTUBA.ACCTCRE.cntry1 )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.state)) THEN
+	#{
+		CUSTUBA.ACCTCRE.state1 = BANCS.INPUT.state
+		PRINT(CUSTUBA.ACCTCRE.state1 )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.zip)) THEN
+	#{
+		CUSTUBA.ACCTCRE.pstCode = BANCS.INPUT.zip
+		PRINT(CUSTUBA.ACCTCRE.pstCode )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.corporate_name)) THEN
+	#{
+		CUSTUBA.ACCTCRE.corpName = BANCS.INPUT.corporate_name
+		PRINT(CUSTUBA.ACCTCRE.corpName )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.pref_name)) THEN
+	#{
+		CUSTUBA.ACCTCRE.fullNam = BANCS.INPUT.pref_name
+		PRINT(CUSTUBA.ACCTCRE.fullNam )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.phonenocitycode)) THEN
+	#{
+		CUSTUBA.ACCTCRE.phonNum2 = BANCS.INPUT.phonenocitycode
+		PRINT(CUSTUBA.ACCTCRE.phonNum2 )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.phonenocountrycode)) THEN
+	#{
+		CUSTUBA.ACCTCRE.phonNum1 = BANCS.INPUT.phonenocountrycode
+		PRINT(CUSTUBA.ACCTCRE.phonNum1 )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.phonenolocalcode)) THEN
+	#{
+		CUSTUBA.ACCTCRE.phonNum3 = BANCS.INPUT.phonenolocalcode
+		PRINT(CUSTUBA.ACCTCRE.phonNum3 )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.Email)) THEN
+	#{
+		CUSTUBA.ACCTCRE.emailAdd = BANCS.INPUT.Email
+		PRINT(CUSTUBA.ACCTCRE.emailAdd )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.IsEbankingEnabled)) THEN
+	#{
+		CUSTUBA.ACCTCRE.intBank = BANCS.INPUT.IsEbankingEnabled
+		PRINT(CUSTUBA.ACCTCRE.intBank )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.crncy_Code)) THEN
+	#{
+		CUSTUBA.ACCTCRE.acctCcy = BANCS.INPUT.crncy_Code
+		PRINT(CUSTUBA.ACCTCRE.acctCcy )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.primaryRM_ID)) THEN
+	#{
+		CUSTUBA.ACCTCRE.rmId = BANCS.INPUT.primaryRM_ID
+		PRINT(CUSTUBA.ACCTCRE.rmId )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.short_name)) THEN
+	#{
+		CUSTUBA.ACCTCRE.shrtNam = BANCS.INPUT.short_name
+		PRINT(CUSTUBA.ACCTCRE.shrtNam )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.segment)) THEN
+	#{
+		CUSTUBA.ACCTCRE.segmnt1 = BANCS.INPUT.segment
+		PRINT(CUSTUBA.ACCTCRE.segmnt1 )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.subsegment)) THEN
+	#{
+		CUSTUBA.ACCTCRE.subSegmnt = BANCS.INPUT.subsegment
+		PRINT(CUSTUBA.ACCTCRE.subSegmnt )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.registration_number)) THEN
+	#{
+		CUSTUBA.ACCTCRE.regNo = BANCS.INPUT.registration_number
+		PRINT(CUSTUBA.ACCTCRE.regNo )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.taxid)) THEN
+	#{
+		CUSTUBA.ACCTCRE.taxIdNo = BANCS.INPUT.taxid
+		PRINT(CUSTUBA.ACCTCRE.taxIdNo )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.countryOfIncorporation)) THEN
+	#{
+		CUSTUBA.ACCTCRE.cntryOfBth1 = BANCS.INPUT.countryOfIncorporation
+		PRINT(CUSTUBA.ACCTCRE.cntryOfBth1 )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.sector)) THEN
+	#{
+		CUSTUBA.ACCTCRE.sect = BANCS.INPUT.sector
+		PRINT(CUSTUBA.ACCTCRE.sect )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.subsector)) THEN
+	#{
+		CUSTUBA.ACCTCRE.subSect = BANCS.INPUT.subsector
+		PRINT(CUSTUBA.ACCTCRE.subSect )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.average_annualincome)) THEN
+	#{
+		CUSTUBA.ACCTCRE.avgAnnIncm = BANCS.INPUT.average_annualincome
+		PRINT(CUSTUBA.ACCTCRE.avgAnnIncm )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.docCode)) THEN
+	#{
+		CUSTUBA.ACCTCRE.typOfCode = BANCS.INPUT.docCode
+		PRINT(CUSTUBA.ACCTCRE.typOfCode )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.docTypeCode)) THEN
+	#{
+		CUSTUBA.ACCTCRE.typOfId = BANCS.INPUT.docTypeCode
+		PRINT(CUSTUBA.ACCTCRE.typOfId )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.placeOfIssue)) THEN
+	#{
+		CUSTUBA.ACCTCRE.plcOfIssu = BANCS.INPUT.placeOfIssue
+		PRINT(CUSTUBA.ACCTCRE.plcOfIssu )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.countryOfIssue)) THEN
+	#{
+		CUSTUBA.ACCTCRE.cntryOfInc = BANCS.INPUT.countryOfIssue
+		PRINT(CUSTUBA.ACCTCRE.cntryOfInc )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.frequency)) THEN
+	#{
+		CUSTUBA.ACCTCRE.freq = BANCS.INPUT.frequency
+		PRINT(CUSTUBA.ACCTCRE.freq )
+	#}
+	ENDIF
+	CUSTUBA.ACCTCRE.acctHold = "A"
+	IF(FIELDEXISTS(BANCS.INPUT.schmCode)) THEN
+	#{
+		CUSTUBA.ACCTCRE.schmCode =	BANCS.INPUT.schmCode
+		PRINT(CUSTUBA.ACCTCRE.schmCode )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.glSubHeadCode)) THEN
+	#{
+		CUSTUBA.ACCTCRE.GSHCode = BANCS.INPUT.glSubHeadCode
+		PRINT(CUSTUBA.ACCTCRE.GSHCode )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.isAcctDocComp)) THEN
+	#{
+		CUSTUBA.ACCTCRE.isAcctDocComp = BANCS.INPUT.isAcctDocComp
+		PRINT(CUSTUBA.ACCTCRE.isAcctDocComp )
+	#}
+	ENDIF
+	IF(FIELDEXISTS(BANCS.INPUT.acctCcy2)) THEN
+	#{
+		CUSTUBA.ACCTCRE.acctCcy2 = BANCS.INPUT.acctCcy2
+		PRINT(CUSTUBA.ACCTCRE.acctCcy2 )
+	#}
+	ENDIF
+	#=============================INPUT PARAMETERS ENDS ===============
+	
+	BANCS.INPARAM.Day = LEFT$(BANCS.STDIN.sysDate,2)
+	BANCS.INPARAM.Month = MID$(BANCS.STDIN.sysDate,3,2)
+	BANCS.INPARAM.Year = MID$(BANCS.STDIN.sysDate,8,2)
+	BANCS.INPARAM.MesgYear = MID$(BANCS.STDIN.sysDate,6,4)
+	BANCS.INPARAM.Hour = MID$(BANCS.STDIN.sysDate,11,2)
+	BANCS.INPARAM.Minute = MID$(BANCS.STDIN.sysDate,14,2)
+	BANCS.INPARAM.Second = MID$(BANCS.STDIN.sysDate,17,2)
+	BANCS.INPARAM.SYSDATE = BANCS.INPARAM.Day + BANCS.INPARAM.Month + BANCS.INPARAM.Year + BANCS.INPARAM.Hour + BANCS.INPARAM.Minute + BANCS.INPARAM.Second
+	PRINT(BANCS.INPARAM.SYSDATE)
+	BANCS.INPARAM.MESSAGEDATETIME = BANCS.INPARAM.MesgYear + "-" + BANCS.INPARAM.Month + "-" + BANCS.INPARAM.Day + "T" + BANCS.INPARAM.Hour + ":" +  BANCS.INPARAM.Minute + ":" + BANCS.INPARAM.Second + ".000"
+	PRINT(BANCS.INPARAM.MESSAGEDATETIME)
+	BANCS.INPARAM.UserId                = BANCS.STDIN.userId
+	BANCS.INPARAM.BANKID                = BANCS.STDIN.contextBankId
+	#BANCS.INPARAM.REQUESTUUID          = BANCS.INPUT.init_mod_ref_num
+	BANCS.INPARAM.REQUESTUUID           = "req_"+BANCS.INPARAM.SYSDATE
+	#BANCS.INPARAM.BANKID               = BANCS.INPUT.bank_id
+	#BANCS.INPARAM.SERVICEREQUESTID     = "WmsOutCorpCustInq"
+	BANCS.INPARAM.SERVICEREQUESTID      = "CustInq"
+	BANCS.INPARAM.MESSAGEDATETIME       = "BANCS.STDIN.sysDate"
+	BANCS.INPARAM.CHANNELID             = "CRM"
+	BANCS.INPARAM.SERVICEREQUESTVERSION = "10.2"
+	BANCS.INPARAM.TIMEZONE              = "GMT+01:30"
+	BANCS.INPARAM.UserApplId            = "FCORE"
+	BANCS.INPARAM.UserChannelId         = "FI"
+	
+	# Check wthether user is real or virtual.
+	sv_b = "virtualFlg|select virtual_flg from UPR"
+	sv_b = sv_b + " where user_id =?SVAR"
+	BANCS.INPARAM.BINDVARS = BANCS.STDIN.userId
+	sv_b = urhk_dbSelectWithBind(sv_b)
+	PRINT(sv_b)
+	sv_c = BANCS.OUTPARAM.virtualFlg
+	PRINT(sv_c)
+	#Fetch record from LGI
+	sv_k = urhk_getLGI("")
+	PRINT(sv_k)
+	IF((sv_k == 0) AND (sv_c == "N")) THEN
+	#{
+		
+		IF(FIELDEXISTS(BANCS.OUTPARAM.sso_session_id)) THEN
+		#{
+			PRINT(BANCS.OUTPARAM.sso_session_id)
+			BANCS.INPUT.sso_session_id = BANCS.OUTPARAM.sso_session_id
+			#}
+		ELSE
+			#{
+			BANCS.INPUT.sso_session_id = ""
+		#}
+		ENDIF
+		IF(FIELDEXISTS(BANCS.OUTPARAM.user_id)) THEN
+		#{
+			BANCS.INPUT.user_id = BANCS.OUTPARAM.user_id
+			#}
+		ELSE
+			#{
+			BANCS.INPUT.user_id = ""
+		#}
+		ENDIF
+		
+		IF(FIELDEXISTS(BANCS.OUTPARAM.sso_xfr_token_for_FI)) THEN
+		#{
+			BANCS.INPUT.sso_xfr_token_for_FI = BANCS.OUTPARAM.sso_xfr_token_for_FI
+			#}
+		ELSE
+			#{
+			BANCS.INPUT.sso_xfr_token_for_FI = ""
+		#}
+		ENDIF
+		#}
+	ELSE
+		#{
+		BANCS.INPUT.sso_session_id = ""
+		BANCS.INPUT.user_id        = ""
+		BANCS.INPUT.sso_xfr_token_for_FI = ""
+	#}
+	ENDIF
+	############################Setting the Body of the Message END ####################
+	##################### Setting the connection parameters  START ######################
+	sv_a="MSG_TYPE=XML,MSG_SUB_TYPE=FIXML###"
+	
+	sv_a="<?xml version='1.0' encoding='UTF-8'?>"
+	sv_a = sv_a + "<FIXML xmlns='http://www.finacle.com/fixml' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://www.finacle.com/fixml createCorporateCustomer.xsd'>"
+	sv_a = sv_a + "<Header>"
+	sv_a = sv_a + "<RequestHeader>"
+	sv_a = sv_a + "<MessageKey>"
+	sv_a = sv_a + "<RequestUUID>"+BANCS.INPARAM.REQUESTUUID+"</RequestUUID>"
+	sv_a = sv_a + "<ServiceRequestId>createCorporateCustomer</ServiceRequestId>"
+	sv_a = sv_a + "<ServiceRequestVersion>10.2</ServiceRequestVersion>"
+	sv_a = sv_a + "<ChannelId>CRM</ChannelId>"
+	sv_a = sv_a + "<LanguageId/>"
+	sv_a = sv_a + "</MessageKey>"
+	sv_a = sv_a + "<RequestMessageInfo>"
+	sv_a = sv_a + "<BankId>"+BANCS.STDIN.contextBankId+"</BankId>"
+	sv_a = sv_a + "<TimeZone/>"
+	sv_a = sv_a + "<EntityId/>"
+	sv_a = sv_a + "<EntityType/>"
+	sv_a = sv_a + "<ArmCorrelationId></ArmCorrelationId>"
+	sv_a = sv_a + "<MessageDateTime>"+BANCS.INPARAM.MESSAGEDATETIME+"</MessageDateTime>"
+	sv_a = sv_a + "</RequestMessageInfo>"
+	sv_a = sv_a + "<Security>"
+	sv_a = sv_a + "<Token>"
+	sv_a = sv_a + "<PasswordToken>"
+	sv_a = sv_a + "<UserId/>"
+	sv_a = sv_a + "<Password/>"
+	sv_a = sv_a + "</PasswordToken>"
+	sv_a = sv_a + "</Token>"
+	sv_a = sv_a + "<FICertToken/>"
+	sv_a = sv_a + "<RealUserLoginSessionId/>"
+	sv_a = sv_a + "<RealUser/>"
+	sv_a = sv_a + "<RealUserPwd/>"
+	sv_a = sv_a + "<SSOTransferToken/>"
+	sv_a = sv_a + "</Security>"
+	sv_a = sv_a + "</RequestHeader>"
+	sv_a = sv_a + "</Header>"
+	sv_a = sv_a + "<Body>"
+	sv_a = sv_a + "<createCorporateCustomerRequest>"
+	sv_a = sv_a + "<CorpCustDetails>"
+	sv_a = sv_a + "<corpCustomerDtlsData>"
+	sv_a = sv_a + "<corpCustomerData>"
+	sv_a = sv_a + "<business_type>7911</business_type>"
+	sv_a = sv_a + "<corpAddressData>"
+	sv_a = sv_a + "<address_line1>"+CUSTUBA.ACCTCRE.streetNo+"</address_line1>"
+	sv_a = sv_a + "<addresscategory>Registered</addresscategory>"
+	#sv_a = sv_a + "<addresscategory>"+CUSTUBA.ACCTCRE.addType+"</addresscategory>"
+	sv_a = sv_a + "<city>"+CUSTUBA.ACCTCRE.city1+"</city>"
+	sv_a = sv_a + "<country>"+CUSTUBA.ACCTCRE.cntry1+"</country>"
+	sv_a = sv_a + "<preferredAddress>Y</preferredAddress>"
+	sv_a = sv_a + "<preferredFormat>FREE_TEXT_FORMAT</preferredFormat>"
+	sv_a = sv_a + "<start_date>"+CUSTUBA.ACCTCRE.fiStrtDate+"T00:00:00.000</start_date>"
+	sv_a = sv_a + "<state>"+CUSTUBA.ACCTCRE.state1+"</state>"
+	sv_a = sv_a + "<zip>"+CUSTUBA.ACCTCRE.pstCode+"</zip>"
+	sv_a = sv_a + "<holdMailFlag>N</holdMailFlag>"
+	sv_a = sv_a + "<FreeTextLabel>Work</FreeTextLabel>"
+	sv_a = sv_a + "</corpAddressData>"
+	sv_a = sv_a + "<corporate_name>"+CUSTUBA.ACCTCRE.corpName+"</corporate_name>"
+	sv_a = sv_a + "<pref_name>"+CUSTUBA.ACCTCRE.fullNam+"</pref_name>"
+	IF ((CUSTUBA.ACCTCRE.phonNum1 != "") AND (CUSTUBA.ACCTCRE.phonNum2 != "") AND (CUSTUBA.ACCTCRE.phonNum3 != "")) THEN
+	#{
+		sv_a = sv_a + "<corpPhoneEmailData>"
+		sv_a = sv_a + "<phoneemailtype>COMMPH1</phoneemailtype>"
+		sv_a = sv_a + "<phoneno>"+CUSTUBA.ACCTCRE.phonNum3+"</phoneno>"
+		sv_a = sv_a + "<phonenocitycode>"+CUSTUBA.ACCTCRE.phonNum2+"</phonenocitycode>"
+		sv_a = sv_a + "<phonenocountrycode>"+CUSTUBA.ACCTCRE.phonNum1+"</phonenocountrycode>"
+		sv_a = sv_a + "<phonenolocalcode>"+CUSTUBA.ACCTCRE.phonNum3+"</phonenolocalcode>"
+		sv_a = sv_a + "<phoneoremail>PHONE</phoneoremail>"
+		sv_a = sv_a + "<preferredflag>Y</preferredflag>"
+		sv_a = sv_a + "<start_date>"+CUSTUBA.ACCTCRE.fiStrtDate+"T00:00:00.000</start_date>"
+		sv_a = sv_a + "</corpPhoneEmailData>"
+	#}
+	ENDIF
+	IF (CUSTUBA.ACCTCRE.emailAdd != "")THEN
+	#{
+		sv_a = sv_a + "<corpPhoneEmailData>"
+		sv_a = sv_a + "<phoneemailtype>REGEML</phoneemailtype>"
+		sv_a = sv_a + "<Email>"+CUSTUBA.ACCTCRE.emailAdd+"</Email>"
+		sv_a = sv_a + "<phoneoremail>EMAIL</phoneoremail>"
+		sv_a = sv_a + "<preferredflag>Y</preferredflag>"
+		sv_a = sv_a + "<start_date>"+CUSTUBA.ACCTCRE.fiStrtDate+"T00:00:00.000</start_date>"
+		sv_a = sv_a + "</corpPhoneEmailData>"
+	#}
+	ENDIF
+	
+	IF (CUSTUBA.ACCTCRE.intBank != "")THEN
+	#{
+		sv_a = sv_a + "<IsEbankingEnabled>"+CUSTUBA.ACCTCRE.intBank+"</IsEbankingEnabled>"
+	#}
+	ENDIF
+	CUSTUBA.ACCTCRE.officer = "LONGB2"
+	sv_a = sv_a + "<createdBySystemID>"+CUSTUBA.ACCTCRE.officer+"</createdBySystemID>"
+	#sv_a = sv_a + "<createdBySystemID>"+BANCS.STDIN.userId+"</createdBySystemID>"
+	sv_a = sv_a + "<crncy_Code>"+CUSTUBA.ACCTCRE.acctCcy+"</crncy_Code>"
+	sv_a = sv_a + "<cust_hlth>C</cust_hlth>"
+	sv_a = sv_a + "<date_of_incorporation>"+CUSTUBA.ACCTCRE.fiDOB+"T00:00:00.000</date_of_incorporation>"
+	sv_a = sv_a + "<defaultaddresstype>Registered</defaultaddresstype>"
+	#sv_a = sv_a + "<defaultaddresstype>"+CUSTUBA.ACCTCRE.addType+"</defaultaddresstype>"
+	sv_a = sv_a + "<entity_type>Customer</entity_type>"
+	sv_a = sv_a + "<isdummy>Y</isdummy>"
+	sv_a = sv_a + "<lang_desc>UK (ENGLISH)</lang_desc>"
+	sv_a = sv_a + "<nativeLangCode>INFENG</nativeLangCode>"
+	sv_a = sv_a + "<primary_service_center>"+BANCS.STDIN.mySolId+"</primary_service_center>"
+	sv_a = sv_a + "<primaryRM_ID>"+CUSTUBA.ACCTCRE.rmId+"</primaryRM_ID>"
+	sv_a = sv_a + "<priority>Normal</priority>"
+	#sv_a = sv_a + "<relationship_createdby>"+BANCS.STDIN.userId+"</relationship_createdby>"
+	sv_a = sv_a + "<relationship_createdby>"+CUSTUBA.ACCTCRE.officer+"</relationship_createdby>"
+	#sv_a = sv_a + "<relationship_startdate>"+CUSTUBA.ACCTCRE.fiStrtDate+"T00:00:00.000</relationship_startdate>"
+	sv_a = sv_a + "<relationship_startdate>"+CUSTUBA.ACCTCRE.RelationShpDate+"T00:00:00.000</relationship_startdate>"
+	sv_a = sv_a + "<short_name>"+CUSTUBA.ACCTCRE.shrtNam+"</short_name>"
+	sv_a = sv_a + "<segment>"+CUSTUBA.ACCTCRE.segmnt1+"</segment>"
+	#sv_a = sv_a + "<subsegment>001</subsegment>"
+	sv_a = sv_a + "<subsegment>"+CUSTUBA.ACCTCRE.subSegmnt+"</subsegment>"
+	sv_a = sv_a + "<registration_number>"+CUSTUBA.ACCTCRE.regNo+"</registration_number>"
+	sv_a = sv_a + "<taxid>"+CUSTUBA.ACCTCRE.taxIdNo+"</taxid>"
+	sv_a = sv_a + "<countryOfIncorporation>"+CUSTUBA.ACCTCRE.cntryOfBth1+"</countryOfIncorporation>"
+	sv_a = sv_a + "<sector>"+CUSTUBA.ACCTCRE.sect+"</sector>"
+	sv_a = sv_a + "<subsector>"+CUSTUBA.ACCTCRE.subSect+"</subsector>"
+	sv_a = sv_a + "<average_annualincome>"+CUSTUBA.ACCTCRE.avgAnnIncm+"</average_annualincome>"
+	sv_a = sv_a + "</corpCustomerData>"
+	sv_a = sv_a + "</corpCustomerDtlsData>"
+	sv_a = sv_a + "<corpRelatedData>"
+	sv_a = sv_a + "<corpEntityDocumentData>"
+	sv_a = sv_a + "<preferredUniqueId>DUMMY</preferredUniqueId>"
+	sv_a = sv_a + "<referenceNumber>DUMMY</referenceNumber>"
+	sv_a = sv_a + "<docCode>"+CUSTUBA.ACCTCRE.typOfCode+"</docCode>"
+	sv_a = sv_a + "<docTypeCode>"+CUSTUBA.ACCTCRE.typOfId+"</docTypeCode>"
+	sv_a = sv_a + "<placeOfIssue>"+CUSTUBA.ACCTCRE.plcOfIssu+"</placeOfIssue>"
+	sv_a = sv_a + "<docIssueDate>"+CUSTUBA.ACCTCRE.fiIssuDate+"T00:00:00.000</docIssueDate>"
+	sv_a = sv_a + "<countryOfIssue>"+CUSTUBA.ACCTCRE.cntryOfInc+"</countryOfIssue>"
+	sv_a = sv_a + "</corpEntityDocumentData>"
+	sv_a = sv_a + "<preferencesData>"
+	sv_a = sv_a + "<frequency>"+CUSTUBA.ACCTCRE.freq+"</frequency>"
+	#===============
+	sv_a = sv_a + "<calendar_type>00</calendar_type>"
+	sv_a = sv_a + "<combined_stmt_reqd>N</combined_stmt_reqd>"
+	sv_a = sv_a + "<combined_stmtflag>N</combined_stmtflag>"
+	#==============
+	sv_a = sv_a + "<corpPrefMiscData>"
+	sv_a = sv_a + "<date1>2099-12-31T00:00:00.000</date1>"
+	sv_a = sv_a + "<date2>"+CUSTUBA.ACCTCRE.fiStrtDate+"T00:00:00.000</date2>"
+	sv_a = sv_a + "<str1>"+CUSTUBA.ACCTCRE.acctCcy+"</str1>"
+	sv_a = sv_a + "<type>CURRENCY</type>"
+	sv_a = sv_a + "</corpPrefMiscData>"
+	
+	CUSTUBA.ACCTCRE.records = CUSTUBA.ACCTCRE.acctCcy2
+	CUSTUBA.ACCTCRE.draftNo = CUSTUBA.ACCTCRE.ccyLength
+	CUSTUBA.ACCTCRE.lp = "1"
+	CUSTUBA.ACCTCRE.st = "0"
+	sv_l = STRLEN(CUSTUBA.ACCTCRE.records)
+	PRINT(sv_l)
+	WHILE (CINT(CUSTUBA.ACCTCRE.lp) <= CINT(CUSTUBA.ACCTCRE.ccyLength))
+	#{
+		sv_i = GETPOSITION(CUSTUBA.ACCTCRE.records,",")
+		PRINT(sv_i)
+		sv_k = mid$(CUSTUBA.ACCTCRE.records,CINT(CUSTUBA.ACCTCRE.st),sv_i - 1)
+		PRINT(sv_k)
+		CUSTUBA.ACCTCRE.acctCcyCodes = sv_k
+		CUSTUBA.ACCTCRE.records = mid$(CUSTUBA.ACCTCRE.records,sv_i,sv_l)
+		PRINT(CUSTUBA.ACCTCRE.records)
+		
+		#===============
+		sv_a = sv_a + "<calendar_type>00</calendar_type>"
+		sv_a = sv_a + "<combined_stmt_reqd>N</combined_stmt_reqd>"
+		sv_a = sv_a + "<combined_stmtflag>N</combined_stmtflag>"
+		#==============
+		
+		sv_a = sv_a + "<corpPrefMiscData>"
+		sv_a = sv_a + "<date1>2099-12-31T00:00:00.000</date1>"
+		sv_a = sv_a + "<date2>"+CUSTUBA.ACCTCRE.fiStrtDate+"T00:00:00.000</date2>"
+		sv_a = sv_a + "<str1>"+CUSTUBA.ACCTCRE.acctCcyCodes+"</str1>"
+		sv_a = sv_a + "<type>CURRENCY</type>"
+		sv_a = sv_a + "</corpPrefMiscData>"
+		CUSTUBA.ACCTCRE.lp = CINT(CUSTUBA.ACCTCRE.lp) + 1
+	#}
+	DO
+	##for multiple currencies
+	sv_a = sv_a + "</preferencesData>"
+	sv_a = sv_a + "</corpRelatedData>"
+	sv_a = sv_a + "</CorpCustDetails>"
+	sv_a = sv_a + "</createCorporateCustomerRequest>"
+	sv_a = sv_a + "</Body>"
+	sv_a = sv_a + "</FIXML>"
+	
+	######################################
+	PRINT(sv_a)
+	############################Setting the Body of the Message END ####################
+	##################### Setting the connection parameters  START ######################
+	
+	#Setting the Service Name to FIJCA. This should not be changed.
+	BANCS.INPARAM.SERVICE_NAME="FIJCA"
+	#you can change the value of following flag to "R" if user needs the response back
+	#BANCS.INPARAM.SEND_RECV_FLG="S"
+	###################### Setting the connection parameters END ######################
+	BANCS.INPARAM.SEND_RECV_FLG="R"
+	#Calling the userhook to connect to FI
+	sv_l=urhk_ConnectToFIAndSendMsg(sv_a)
+	IF(sv_l!=0) THEN
+	#{
+		IF(BANCS.OUTPARAM.ErrMsg!="") THEN
+		#{
+			PRINT("Error thrown from the user hook is ["+BANCS.OUTPARAM.ErrMsg+"]")
+			CUSTUBA.ACCTCRE.errMesg = BANCS.OUTPARAM.ErrMsg + " to CRM Module"
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_x = urhk_SetOrbOut("Error_1|ERR^"+CUSTUBA.ACCTCRE.errMesg+ "^funcCode")
+			GOTO ENDOFSCRIPT
+		#}
+		ENDIF
+	#}
+	ENDIF
+	BANCS.OUTPUT.ErrorMessage = BANCS.OUTPARAM.ErrMsg
+	BANCS.OUTPUT.RespMsg = BANCS.OUTPARAM.RespMesg
+	PRINT("Response message is ["+BANCS.OUTPARAM.RespMesg+"]")
+	sv_d = BANCS.OUTPARAM.RespMesg
+	
+	sv_l = STRLEN(sv_d)
+	PRINT(sv_l)
+	sv_s = GETPOSITION(sv_d,"<Status>")+STRLEN("<Status>")-1
+	PRINT(sv_s)
+	sv_e = GETPOSITION(sv_d,"</Status>")-1
+	PRINT(sv_e)
+	sv_k = mid$(sv_d,sv_s, (sv_e-sv_s))
+	PRINT(sv_k)
+	
+	IF(sv_k != "SUCCESS") THEN
+	#{
+		BANCS.OUTPUT.status = "FAILURE"
+		sv_s = GETPOSITION(sv_d,"<ErrorDesc>")+STRLEN("<ErrorDesc>")-1
+		PRINT(sv_s)
+		sv_e = GETPOSITION(sv_d,"</ErrorDesc>")-1
+		PRINT(sv_e)
+		sv_k = mid$(sv_d,sv_s, (sv_e-sv_s))
+		PRINT(sv_k)
+		sv_s = GETPOSITION(sv_k,"|")
+		IF (sv_s > 0)THEN
+		#{
+			sv_k = mid$(sv_k,0,sv_s-1)
+		#}
+		ENDIF
+		CUSTUBA.ACCTCRE.errMesg = sv_k
+		sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+		sv_x = urhk_SetOrbOut("Error_1|ERR^"+CUSTUBA.ACCTCRE.errMesg+ "^funcCode")
+		GOTO ENDOFSCRIPT
+		#}
+	ELSE
+		#{
+		BANCS.OUTPUT.status = "SUCCESS"
+		sv_x = urhk_SetOrbOut("MESSAGE|"+BANCS.OUTPUT.status)
+		sv_s = GETPOSITION(sv_d,"<cifid>")+STRLEN("<cifid>")-1
+		PRINT(sv_s)
+		sv_e = GETPOSITION(sv_d,"</cifid>")-1
+		PRINT(sv_e)
+		sv_k = mid$(sv_d,sv_s, (sv_e-sv_s))
+		PRINT(sv_k)
+		###########################
+		#####Call Verification
+		############################
+		CUSTUBA.ACCTCRE.tempCifId = sv_k
+		CUSTUBA.ACCTCRE.entityName = "CorporateCustomer"
+		CALL("FICopCifAccVer.scr")
+		IF (CUSTUBA.ACCTCRE.cifId != "")THEN
+		#{
+			sv_a = "update crmuser.accounts set struserfield30 = ?SVAR,"
+			sv_a = sv_a + " StrUserField25 = ?SVAR,"
+			sv_a = sv_a + " StrUserField12 = ?SVAR,"
+			sv_a = sv_a + " StrUserField27 = ?SVAR,"
+			sv_a = sv_a + " StrUserField9 = ?SVAR,"
+			sv_a = sv_a + " StrUserField28 = ?SVAR,"
+			sv_a = sv_a + " StrUserField6 = ?SVAR,"
+			sv_a = sv_a + " struserfield2 = ?SVAR,"
+			sv_a = sv_a + " StrUserField7 = ?SVAR,"
+			sv_a = sv_a + " StrUserField5 = ?SVAR,"
+			sv_a = sv_a + " StrUserField29 = ?SVAR,"
+			# Added by Njideka 03-10-2018
+			sv_a = sv_a + " StrUserField20 = ?SVAR,"
+			#end
+			sv_a = sv_a + " RISKRATING = ?SVAR"
+			sv_a = sv_a + " where orgkey = ?SVAR"
+			BANCS.INPARAM.BINDVARS = CUSTUBA.ACCTCRE.biometId+"|"+CUSTUBA.ACCTCRE.jtAcctFlg
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.usPers
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.statOfOrig
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.PEPFlg
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.lclGovt
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.PEPRltnshp
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.KYCInd
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.otherRltnshp
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.namOfPEP
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.natOfBiz
+			#Added by  Njideka for inserting mobile banking flg into accounts table 03-10-2018
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.mobBank
+			#end
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.riskRtg
+			BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.cifId
+			
+			PRINT(sv_a)
+			sv_c = urhk_dbSQLWithBind(sv_a)
+			sv_c = urhk_dbSQLWithBind("commit")
+			PRINT(sv_c)
+			CUSTUBA.ACCTCRE.status = ""
+			IF (CUSTUBA.ACCTCRE.acctHold != "")THEN
+			#{
+				sv_p = "schmType|SELECT SCHM_TYPE FROM TBAADM.GSP WHERE SCHM_CODE = '"+CUSTUBA.ACCTCRE.schmCode+"' AND DEL_FLG = 'N'"
+				sv_p = sv_p + " AND bank_id = '"+BANCS.STDIN.contextBankId+"'"
+				PRINT(sv_p)
+				sv_y = urhk_dbselectWithBind (sv_p)
+				IF (sv_y == 0) THEN
+				#{
+					
+					CUSTUBA.ACCTCRE.schmType = BANCS.OUTPARAM.schmType
+					PRINT(CUSTUBA.ACCTCRE.schmType)
+				#}
+				ENDIF
+				###############Call account opening scripts
+				BANCS.INPUT.funcCode = "A"
+				BANCS.INPUT.solId = BANCS.STDIN.mySolId
+				BANCS.INPUT.currency = CUSTUBA.ACCTCRE.acctCcy
+				BANCS.INPUT.cifId = CUSTUBA.ACCTCRE.cifId
+				BANCS.INPUT.schmCode = CUSTUBA.ACCTCRE.schmCode
+				BANCS.INPUT.glSubHeadCode = CUSTUBA.ACCTCRE.GSHCode
+				BANCS.INPUT.pnd = CUSTUBA.ACCTCRE.isAcctDocComp
+				###########ODA
+				IF (CUSTUBA.ACCTCRE.schmType == "ODA")THEN
+				#{
+					CALL("FICreCifAcctOda.scr")
+					TRACE ON
+					IF (FIELDEXISTS(CUST.ODA.acct) == 1)THEN
+					#{
+						CUSTUBA.ACCTCRE.acctNum = CUST.ODA.acct
+						CUSTUBA.ACCTCRE.status = "V"
+						GOTO sendOut
+						#}
+					ELSE
+						#{
+						IF (FIELDEXISTS(CUST.ODA.acctNum) == 1)THEN
+						#{
+							CUSTUBA.ACCTCRE.acctNum = CUST.ODA.acctNum
+							CUSTUBA.ACCTCRE.status = "E"
+							GOTO sendOut
+							#}
+						ELSE
+							#{
+							CUSTUBA.ACCTCRE.acctNum = ""
+							CUSTUBA.ACCTCRE.status = "E"
+							GOTO sendOut
+						#}
+						ENDIF
+					#}
+					ENDIF
+					
+				#}
+				ENDIF
+				#################CAA
+				IF (CUSTUBA.ACCTCRE.schmType == "CAA")THEN
+				#{
+					CALL("FICreCifAcctCAA.scr")
+					TRACE ON
+					IF (FIELDEXISTS(CUST.CAA.acct) == 1)THEN
+					#{
+						CUSTUBA.ACCTCRE.acctNum = CUST.CAA.acct
+						CUSTUBA.ACCTCRE.status = "V"
+						GOTO sendOut
+						#}
+					ELSE
+						#{
+						IF (FIELDEXISTS(CUST.CAA.acctNum) == 1)THEN
+						#{
+							CUSTUBA.ACCTCRE.acctNum = CUST.CAA.acctNum
+							CUSTUBA.ACCTCRE.status = "E"
+							GOTO sendOut
+							#}
+						ELSE
+							#{
+							CUSTUBA.ACCTCRE.acctNum = ""
+							CUSTUBA.ACCTCRE.status = "E"
+							GOTO sendOut
+						#}
+						ENDIF
+					#}
+					ENDIF
+				#}
+				ENDIF
+				#}
+			ELSE
+				#{
+				CUSTUBA.ACCTCRE.acctNum = ""
+				CUSTUBA.ACCTCRE.status = "V"
+				GOTO sendOut
+			#}
+			ENDIF
+			sendOut:
+				###Update custom table for introducer
+				IF (CUSTUBA.ACCTCRE.staffInd == "N")THEN
+				#{
+					sv_a = "update CUSTOM.INTRO_STAFF_TBL set STAFF_ID=?SVAR, CONF_DEAL_FLG='N',CON_STAFF='Y'"
+					sv_a = sv_a + " where FORACID=?SVAR AND RCRE_TIME=to_date(?SVAR, 'DD-MM-YYYY')"
+					BANCS.INPARAM.BINDVARS = CUSTUBA.ACCTCRE.relMngrId+"|"+CUSTUBA.ACCTCRE.acctNum+"|"+MID$(BANCS.STDIN.BODDate,0,10)
+					PRINT(sv_a)
+					sv_c = urhk_dbSQLWithBind(sv_a)
+					PRINT(sv_c)
+					IF (sv_c == 0)THEN
+					#{
+						sv_a = urhk_dbSQLWithBind("COMMIT")
+						PRINT(sv_a)
+					#}
+					ENDIF
+				#}
+				ENDIF
+				
+				##########################################################
+				########## Insert into custom Table
+				##################################################################
+				sv_a = "insert into CUSTOM.FICOOPACCTCRE_TBL values(?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "TO_DATE(?SVAR, 'DD-MM-YYYY'),?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,TO_DATE(?SVAR, 'DD-MM-YYYY HH24:MI:SS'),?SVAR,"
+				sv_a = sv_a + "TO_DATE(?SVAR, 'DD-MM-YYYY HH24:MI:SS'),"
+				sv_a = sv_a + "?SVAR,?SVAR,"
+				sv_a = sv_a + "?SVAR,?SVAR,?SVAR,?SVAR"
+				sv_a = sv_a + ")"
+				BANCS.INPARAM.BINDVARS = CUSTUBA.ACCTCRE.status+"|"+BANCS.STDIN.mySolId+"|"+BANCS.STDIN.contextBankId+"|"+mid$(BANCS.STDIN.BODDate,0,10)+"|"+CUSTUBA.ACCTCRE.cifId+"|"+CUSTUBA.ACCTCRE.acctTyp+"|"+CUSTUBA.ACCTCRE.biometId
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.acctNum+"|"+CUSTUBA.ACCTCRE.corpName+"|"+CUSTUBA.ACCTCRE.title+"|"+CUSTUBA.ACCTCRE.firstNam+"|"+CUSTUBA.ACCTCRE.DOB
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.midName+"|"+CUSTUBA.ACCTCRE.emailAdd+"|"+CUSTUBA.ACCTCRE.lastNam+"|"+CUSTUBA.ACCTCRE.phonNum1+"|"+CUSTUBA.ACCTCRE.phonNum2
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.phonNum3+"|"+CUSTUBA.ACCTCRE.fullNam+"|"+CUSTUBA.ACCTCRE.natId+"|"+CUSTUBA.ACCTCRE.sHold+"|"+CUSTUBA.ACCTCRE.custExst
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.sig+"|"+CUSTUBA.ACCTCRE.dir+"|"+CUSTUBA.ACCTCRE.acctHold+"|"+CUSTUBA.ACCTCRE.acctCcy2+"|"+CUSTUBA.ACCTCRE.jtAcctFlg
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.gender+"|"+CUSTUBA.ACCTCRE.nonResInd+"|"+CUSTUBA.ACCTCRE.maritStat+"|"+CUSTUBA.ACCTCRE.cntryOfRes1+"|"+CUSTUBA.ACCTCRE.cntryOfRes2
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.cntryOfBth1+"|"+CUSTUBA.ACCTCRE.cntryOfBth2+"|"+CUSTUBA.ACCTCRE.turnNonRes_ui+"|"+CUSTUBA.ACCTCRE.nation1+"|"+CUSTUBA.ACCTCRE.nation2
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.usPers+"|"+CUSTUBA.ACCTCRE.statOfOrig+"|"+CUSTUBA.ACCTCRE.PEPFlg+"|"+CUSTUBA.ACCTCRE.lclGovt+"|"+CUSTUBA.ACCTCRE.PEPRltnshp
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.KYCInd+"|"+CUSTUBA.ACCTCRE.otherRltnshp+"|"+CUSTUBA.ACCTCRE.equalOrGreater+"|"+CUSTUBA.ACCTCRE.staffInd+"|"+CUSTUBA.ACCTCRE.resOrCitiz
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.relMngrId+"|"+CUSTUBA.ACCTCRE.shrtNam+"|"+CUSTUBA.ACCTCRE.minorInd+"|"+CUSTUBA.ACCTCRE.snrCitiz+"|"+CUSTUBA.ACCTCRE.priSolId
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.solName+"|"+CUSTUBA.ACCTCRE.addValFrm+"|"+CUSTUBA.ACCTCRE.relStrtDate+"|"+CUSTUBA.ACCTCRE.addType+"|"+CUSTUBA.ACCTCRE.streetNo+"|"+CUSTUBA.ACCTCRE.occup
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.city1+"|"+CUSTUBA.ACCTCRE.city2+"|"+CUSTUBA.ACCTCRE.empType+"|"+CUSTUBA.ACCTCRE.state1+"|"+CUSTUBA.ACCTCRE.state2
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.segmnt1+"|"+CUSTUBA.ACCTCRE.segmnt2+"|"+CUSTUBA.ACCTCRE.cntry1+"|"+CUSTUBA.ACCTCRE.cntry2+"|"+CUSTUBA.ACCTCRE.subSegmnt
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.pstCode+"|"+CUSTUBA.ACCTCRE.natOfBiz+"|"+CUSTUBA.ACCTCRE.typOfId+"|"+CUSTUBA.ACCTCRE.typOfCode+"|"+CUSTUBA.ACCTCRE.intBank
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.eStatmnt+"|"+CUSTUBA.ACCTCRE.taxIdNo+"|"+CUSTUBA.ACCTCRE.mobBank+"|"+CUSTUBA.ACCTCRE.freq+"|"+CUSTUBA.ACCTCRE.plcOfIssu
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.smsAlrt+"|"+CUSTUBA.ACCTCRE.rmId+"|"+CUSTUBA.ACCTCRE.issuDate_ui+"|"+CUSTUBA.ACCTCRE.emailAlrt+"|"+CUSTUBA.ACCTCRE.expDate_ui
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.dbtCard+"|"+CUSTUBA.ACCTCRE.regNo+"|"+CUSTUBA.ACCTCRE.prefNam+"|"+CUSTUBA.ACCTCRE.prntCoy+"|"+CUSTUBA.ACCTCRE.sect
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.subSect+"|"+CUSTUBA.ACCTCRE.cntryOfInc+"|"+CUSTUBA.ACCTCRE.avgAnnIncm+"|"+CUSTUBA.ACCTCRE.SCUMReg+"|"+CUSTUBA.ACCTCRE.CRMNo
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.resPermNo+"|"+CUSTUBA.ACCTCRE.namOfPEP+"|"+CUSTUBA.ACCTCRE.issuAuthort+"|"+CUSTUBA.ACCTCRE.schmCode
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.GSHCode+"|"+CUSTUBA.ACCTCRE.acctOfRef+"|"+CUSTUBA.ACCTCRE.isAcctDocComp+"|"+BANCS.STDIN.userId+"|"+BANCS.STDIN.sysDate
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+BANCS.STDIN.userId+"|"+BANCS.STDIN.sysDate
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.reltdPtyDetCnt+"|"+CUSTUBA.ACCTCRE.reltdPtyDet
+				BANCS.INPARAM.BINDVARS = BANCS.INPARAM.BINDVARS+"|"+CUSTUBA.ACCTCRE.minReln+"|"+CUSTUBA.ACCTCRE.minRelnGDCode+"|"+CUSTUBA.ACCTCRE.minRelnCifId+"|"+CUSTUBA.ACCTCRE.riskRtg
+				sv_c = urhk_dbSQLWithBind(sv_a)
+				sv_c = urhk_dbSQLWithBind("commit")
+				PRINT(sv_c)
+				IF (sv_c != 0) THEN
+				#{
+					sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+					sv_a = urhk_SetOrbOut("Error_1|ERR^ Unable to Update Data ^funcCode")
+				#}
+				ENDIF
+				#######################################################################
+				sv_l = urhk_SetOrbOut("SuccessOrFailure|Y")
+				IF (CUSTUBA.ACCTCRE.acctNum != "")THEN
+				#{
+					PRINT(CUSTUBA.ACCTCRE.acctNum)
+					#sv_a = urhk_SetOrbOut("RESULT_MSG| Corporate CIF created Successfully. CIF ID : "+CUSTUBA.ACCTCRE.cifId+" AND Temp Account Number is : "+CUSTUBA.ACCTCRE.acctNum)
+					#CUSTUBA.ACCTCRE.cifcre="Corporate CIF created Successfully. CIF ID : " + CUSTUBA.ACCTCRE.cifId
+					#CUSTUBA.ACCTCRE.acctcre="Corporate CIF created Successfully. CIF ID : " + CUSTUBA.ACCTCRE.acctNum
+					sv_v="result|success"
+					sv_k="message1|" +CUSTUBA.ACCTCRE.cifId
+					sv_j="message2|" +CUSTUBA.ACCTCRE.acctNum
+					sv_u=urhk_SetOrbOut(sv_v)
+					sv_y=urhk_SetOrbOut(sv_k)
+					sv_u=urhk_SetOrbOut(sv_j)
+					#}
+				ELSE
+					#{
+					IF (CUSTUBA.ACCTCRE.acctHold == "")THEN
+					#{
+						#sv_a = urhk_SetOrbOut("RESULT_MSG| Corporate CIF created Successfully. CIF ID : "+CUSTUBA.ACCTCRE.cifId)
+						#CUSTUBA.ACCTCRE.cifcre="Corporate CIF created Successfully. CIF ID : " + CUSTUBA.ACCTCRE.cifId
+						#CUSTUBA.ACCTCRE.acctcre="Corporate CIF created Successfully. CIF ID : " + CUSTUBA.ACCTCRE.acctNum
+						sv_v="result|faliure"
+						sv_k="message1|" +CUSTUBA.ACCTCRE.cifId
+						#sv_j="message2|" +CUSTUBA.ACCTCRE.acctcre
+						sv_u=urhk_SetOrbOut(sv_v)
+						sv_y=urhk_SetOrbOut(sv_k)
+						#sv_u=urhk_SetOrbOut(sv_j)
+						
+						#}
+					ELSE
+						#{
+						#sv_a = urhk_SetOrbOut("RESULT_MSG| Corporate CIF created Successfully. CIF ID : "+CUSTUBA.ACCTCRE.cifId+" AND Temp Account Number is not generated")
+						#CUSTUBA.ACCTCRE.cifcre="Corporate CIF created Successfully. CIF ID : " + CUSTUBA.ACCTCRE.cifId
+						#CUSTUBA.ACCTCRE.acctcre="Corporate CIF created Successfully. CIF ID : " + CUSTUBA.ACCTCRE.acctNum
+						sv_v="result|faliure"
+						sv_k="message1|" +CUSTUBA.ACCTCRE.cifId
+						#sv_j="message2|" +CUSTUBA.ACCTCRE.acctcre
+						sv_u=urhk_SetOrbOut(sv_v)
+						sv_y=urhk_SetOrbOut(sv_k)
+						#sv_u=urhk_SetOrbOut(sv_j)
+					#}
+					ENDIF
+				#}
+				ENDIF
+			#}
+			ENDIF
+			IF (CUSTUBA.ACCTCRE.ErrMsg != "")THEN
+			#{
+				sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+				sv_a = urhk_SetOrbOut("Error_1|ERR^"+CUSTUBA.ACCTCRE.ErrMsg+"^funcCode")
+			#}
+			ENDIF
+			##########################################################################
+		#}
+		ENDIF
+	ENDOFSCRIPT:
+		EXITSCRIPT
+		
+END-->
