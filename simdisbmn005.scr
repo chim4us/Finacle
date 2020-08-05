@@ -1,0 +1,1058 @@
+#============================================================
+# IMPORTANT: Auto Generated Header. DO NOT CHANGE MANUALLY.
+# Product: Finacle Core
+# Category: User Defined
+# Script: simdisbmn005.scr
+# Type: NA|default
+# Description: These types of scripts do not belong to any particular category and are standalone scripts with no script specific repositories or fields.
+# Modification Log:
+#============================================================
+
+<--START
+CHECKSUM="0f4ca73dbf8068401991fbb992f6643f90aaf04510755e6f3c66714e25d74542"
+	# Script body goes here
+	TRACE ON
+	sv_v = urhk_B2k_PrintRepos("BANCS")
+	#*********************************
+	#	Repository Creation
+	#*********************************
+	IF (REPEXISTS("CUST") == 0) THEN
+	#{
+		CREATEREP("CUST")
+	#}
+	ENDIF
+	IF (CLASSEXISTS("CUST", "DGOTE") == 0) THEN
+	#{
+		CREATECLASS("CUST", "DGOTE", 5)
+	#}
+	ENDIF
+	CUST.DGOTE.errmsg=""
+	CUST.DGOTE.tranDate  = BANCS.INPUT.tranDate
+	PRINT(CUST.DGOTE.tranDate)
+	CUST.DGOTE.acctNo  = BANCS.INPUT.acctNo
+	PRINT(CUST.DGOTE.acctNo)
+	CUST.DGOTE.crcnyCode  = BANCS.INPUT.crcnyCode
+	PRINT(CUST.DGOTE.crcnyCode)
+	CUST.DGOTE.AcctName  = BANCS.INPUT.AcctName
+	PRINT(CUST.DGOTE.AcctName)
+	CUST.DGOTE.amt  = BANCS.INPUT.amt
+	PRINT(CUST.DGOTE.amt)
+	CUST.DGOTE.disbAmt  = BANCS.INPUT.disbAmt
+	PRINT(CUST.DGOTE.disbAmt)
+	CUST.DGOTE.disbdAmt  = BANCS.INPUT.disbdAmt
+	PRINT(CUST.DGOTE.disbdAmt)
+	CUST.DGOTE.mnth  = BANCS.INPUT.mnth
+	PRINT(CUST.DGOTE.mnth)
+	CUST.DGOTE.dayM  = BANCS.INPUT.dayM
+	PRINT(CUST.DGOTE.dayM)
+	CUST.DGOTE.tranType  = BANCS.INPUT.tranType
+	PRINT(CUST.DGOTE.tranType)
+	CUST.DGOTE.funcCode  = BANCS.INPUT.funcCode
+	PRINT(CUST.DGOTE.funcCode)
+	CUST.DGOTE.availDisbAmt  = BANCS.INPUT.availDisbAmt
+	PRINT(CUST.DGOTE.availDisbAmt)
+	CUST.DGOTE.finDisb  = BANCS.INPUT.finDisb
+	PRINT(CUST.DGOTE.finDisb)
+	CUST.DGOTE.groNetDisb  = BANCS.INPUT.groNetDisb
+	PRINT(CUST.DGOTE.groNetDisb)
+	CUST.DGOTE.totDisbAmts  = BANCS.INPUT.totDisbAmts
+	PRINT(CUST.DGOTE.totDisbAmts)
+	CUST.DGOTE.CLN  = BANCS.INPUT.CLN
+	PRINT(CUST.DGOTE.CLN)
+	
+	IF(CUST.DGOTE.funcCode=="D")THEN
+	#{
+		GOTO INSERT
+	#}
+	ENDIF
+	
+	IF(CUST.DGOTE.funcCode=="M")THEN
+	#{
+		GOTO MODIFY
+	#}
+	ENDIF
+	IF(CUST.DGOTE.funcCode=="X")THEN
+	#{
+		GOTO CANCEL
+	#}
+	ENDIF
+	
+	IF(CUST.DGOTE.funcCode=="R")THEN
+	#{
+		GOTO REVENT
+	#}
+	ENDIF
+	IF(CUST.DGOTE.funcCode=="V")THEN
+	#{
+		sv_a="entFlg|select ENTITY_CRE_FLG  "
+		sv_a =  sv_a +" from custom.simdisbt where foracid='"+CUST.DGOTE.acctNo+"'"
+		sv_a =  sv_a +"  AND LCHG_TIME >= (select max(LCHG_TIME) from custom.simdisbt where foracid='"+CUST.DGOTE.acctNo+"')"
+		#sv_k =  sv_k +"  AND ENTITY_CRE_FLG='Y')"
+		PRINT(sv_a)
+		sv_y = urhk_dbselectWithBind(sv_a)
+		IF (sv_y == "0") THEN
+		#{
+			CUST.DGOTE.entFlg=BANCS.OUTPARAM.entFlg
+			PRINT(CUST.DGOTE.entFlg)
+			#}
+		ELSE
+			#{
+			CUST.DGOTE.entFlg="N"
+		#}
+		ENDIF
+		IF(CUST.DGOTE.entFlg =="N")THEN
+		#{
+			GOTO VERIFY
+			#}
+		ELSE
+			#{
+			CUST.DGOTE.funcCode="R"
+			GOTO VERIFY
+		#}
+		ENDIF
+	#}
+	ENDIF
+	
+	INSERT:
+		################VALUE LIST######################
+		
+		sv_r ="FORACID,CRNCY_CODE,TRAN_DATE,ACCT_NAME,LOAN_AMT,TOT_DISB_AMT,DISB_AMT,DISBD_AMT, "
+		sv_r = sv_r + " LOAN_PRD_MTH, LOAN_PRD_DAY,"
+		sv_r = sv_r + " TRAN_TYPE, AVAIL_DISB_AMT, FINAL_DISB,GROSS_NET,"
+		sv_r = sv_r + " SOL_ID,ENTITY_CRE_FLG,LOAN_DATA,LCHG_USER_ID,LCHG_TIME,RCRE_USER_ID,RCRE_TIME,BANK_ID"
+		
+		PRINT(sv_r)
+		################VALUE LIST######################
+		
+		sv_v = "'"    + CUST.DGOTE.acctNo + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.crcnyCode  + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.tranDate  + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.AcctName  + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.amt  + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.totDisbAmts  + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.disbAmt  + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.disbdAmt   + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.mnth  + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.dayM  + "',"
+		sv_v = sv_v + "'"  + CUST.DGOTE.tranType  + "',"
+		sv_v = sv_v + "'" + CUST.DGOTE.availDisbAmt + "',"
+		sv_v = sv_v + "'" + CUST.DGOTE.finDisb + "',"
+		sv_v = sv_v + "'" + CUST.DGOTE.groNetDisb + "',"
+		sv_v = sv_v + "'" + BANCS.STDIN.mySolId + "',"
+		sv_v = sv_v + "'N',"
+		sv_v = sv_v + "q'[" + CUST.DGOTE.CLN + "]',"
+		sv_v = sv_v + "'"  + BANCS.STDIN.userId + "',"
+		sv_v = sv_v + "SYSDATE,"
+		sv_v = sv_v + "'"  + BANCS.STDIN.userId + "',"
+		sv_v = sv_v + "SYSDATE,"
+		sv_v = sv_v + "'" + BANCS.STDIN.contextBankId +  "'"
+		PRINT(sv_r)
+		PRINT(sv_v)
+		
+		sv_q = "insert into CUSTOM.SIMDISBT (" + sv_r + ") values (" + sv_v + ")"
+		PRINT(sv_q)
+		sv_r  = urhk_dbSQLWithBind(sv_q)
+		PRINT(sv_r)
+		IF(sv_r!=0) THEN
+		#{
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_a = urhk_SetOrbErr("Error posting transaction to database")
+			GOTO ENDOFSCRIPT
+			#}
+		ELSE
+			#{
+			sv_t=urhk_dbSQLWithBind("commit")
+			PRINT(sv_t)
+			sv_m="Loan Disbursement was Successful"
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|Y")
+			sv_s = urhk_SetOrbOut("RESULT_MSG|" + sv_m)
+			GOTO ENDOFSCRIPT
+		#}
+		ENDIF
+		
+	MODIFY:
+		
+		sv_v ="update CUSTOM.SIMDISBT set CRNCY_CODE='"  + CUST.DGOTE.crcnyCode  + "',"
+		sv_v = sv_v + " TRAN_DATE='"  + CUST.DGOTE.tranDate  + "', ACCT_NAME='"  + CUST.DGOTE.AcctName  + "',LOAN_AMT='"  + CUST.DGOTE.disbAmt  + "'," + "TOT_DISB_AMT='"  + CUST.DGOTE.totDisbAmts  + "',"
+		sv_v = sv_v + " DISB_AMT='"  + CUST.DGOTE.disbAmt  + "', DISBD_AMT='"  + CUST.DGOTE.disbdAmt  + "',LOAN_PRD_MTH='"  + CUST.DGOTE.mnth  + "',"
+		sv_v = sv_v + " LOAN_PRD_DAY='"  + CUST.DGOTE.dayM  + "', TRAN_TYPE='"  + CUST.DGOTE.tranType  + "',AVAIL_DISB_AMT='"  + CUST.DGOTE.availDisbAmt  + "',"
+		sv_v = sv_v + " FINAL_DISB='"  + CUST.DGOTE.finDisb  + "', GROSS_NET='"  + CUST.DGOTE.groNetDisb  + "',SOL_ID='"  + BANCS.STDIN.mySolId  + "',"
+		sv_v = sv_v + " ENTITY_CRE_FLG='N', LOAN_DATA=q'[" + CUST.DGOTE.CLN + "]',LCHG_USER_ID='"  + BANCS.STDIN.userId  + "',"
+		sv_v = sv_v + " LCHG_TIME=sysdate, BANK_ID='"  + BANCS.STDIN.contextBankId  + "' where foracid='"+ CUST.DGOTE.acctNo + "' AND ENTITY_CRE_FLG='N'"
+		
+		PRINT(sv_v)
+		sv_r  = urhk_dbSQLWithBind(sv_v)
+		PRINT(sv_r)
+		IF(sv_r!=0) THEN
+		#{
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_a = urhk_SetOrbErr("Error updating Loan disbursement in database")
+			GOTO ENDOFSCRIPT
+			#}
+		ELSE
+			#{
+			sv_t=urhk_dbSQLWithBind("commit")
+			PRINT(sv_t)
+			sv_m="Loan Disbursement details modified was Successful"
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|Y")
+			sv_s = urhk_SetOrbOut("RESULT_MSG|" + sv_m)
+			GOTO ENDOFSCRIPT
+		#}
+		ENDIF
+		
+	CANCEL:
+		
+		sv_v ="update CUSTOM.SIMDISBT set "
+		sv_v = sv_v + " ENTITY_CRE_FLG='X',LCHG_USER_ID='"  + BANCS.STDIN.userId  + "',"
+		sv_v = sv_v + " LCHG_TIME=sysdate, BANK_ID='"  + BANCS.STDIN.contextBankId  + "' where foracid='"+ CUST.DGOTE.acctNo + "' AND ENTITY_CRE_FLG='N'"
+		################VALUE LIST######################
+		PRINT(sv_v)
+		sv_r  = urhk_dbSQLWithBind(sv_v)
+		PRINT(sv_r)
+		IF(sv_r!=0) THEN
+		#{
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_a = urhk_SetOrbErr("Error cancelling disbursement")
+			GOTO ENDOFSCRIPT
+			#}
+		ELSE
+			#{
+			sv_t=urhk_dbSQLWithBind("commit")
+			PRINT(sv_t)
+			sv_m="Loan Disbursement details cancelled  Successfully"
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|Y")
+			sv_s = urhk_SetOrbOut("RESULT_MSG|" + sv_m)
+			GOTO ENDOFSCRIPT
+			
+		#}
+		ENDIF
+		
+	REVENT:
+		
+		sv_v ="update CUSTOM.SIMDISBT set "
+		sv_v = sv_v + " ENTITY_CRE_FLG='RE',LCHG_USER_ID='"  + BANCS.STDIN.userId  + "',"
+		sv_v = sv_v + " LCHG_TIME=sysdate, BANK_ID='"  + BANCS.STDIN.contextBankId  + "' where foracid='"+ CUST.DGOTE.acctNo + "' AND ENTITY_CRE_FLG='Y'"
+		sv_v =  sv_v +"  AND LCHG_TIME >= (select max(LCHG_TIME) from custom.simdisbt where foracid='"+CUST.DGOTE.acctNo+"'"
+		sv_v =  sv_v +"  AND ENTITY_CRE_FLG='Y')"
+		################VALUE LIST######################
+		PRINT(sv_v)
+		sv_r  = urhk_dbSQLWithBind(sv_v)
+		PRINT(sv_r)
+		IF(sv_r!=0) THEN
+		#{
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_a = urhk_SetOrbErr("Error reversing disbursement")
+			GOTO ENDOFSCRIPT
+			#}
+		ELSE
+			#{
+			sv_t=urhk_dbSQLWithBind("commit")
+			PRINT(sv_t)
+			sv_m="Reversal initiated Successfully, pending verification"
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|Y")
+			sv_s = urhk_SetOrbOut("RESULT_MSG|" + sv_m)
+			GOTO ENDOFSCRIPT
+			
+		#}
+		ENDIF
+		
+	VERIFY:
+		#####################---------------------------------------------------------------------------------------------------------####################
+		####################################################################################################################################################
+		sv_h="Schm_code, acct_crncy_code, acid|select schm_code, acct_crncy_code, acid from tbaadm.gam where foracid='"+CUST.DGOTE.acctNo+"'"
+		PRINT(sv_h)
+		sv_k = urhk_dbSelectwithbind(sv_h)
+		PRINT(sv_k)
+		IF(sv_k == 0)THEN
+		#{
+			
+			CUST.DGOTE.Schm_code = BANCS.OUTPARAM.Schm_code
+			CUST.DGOTE.acct_crncy_code = BANCS.OUTPARAM.acct_crncy_code
+			CUST.DGOTE.acid = BANCS.OUTPARAM.acid
+			PRINT(CUST.DGOTE.Schm_code)
+			PRINT(CUST.DGOTE.acct_crncy_code)
+			PRINT(CUST.DGOTE.acid)
+		#}
+		ENDIF
+		
+		sv_h="operAcctNum|select (select foracid from tbaadm.gam where acid=OP_ACID) from tbaadm.lam where acid='"+CUST.DGOTE.acid+"'"
+		PRINT(sv_h)
+		sv_k = urhk_dbSelectwithbind(sv_h)
+		PRINT(sv_k)
+		IF(sv_k == 0)THEN
+		#{
+			CUST.DGOTE.operAcctNum = BANCS.OUTPARAM.operAcctNum
+			PRINT(CUST.DGOTE.operAcctNum)
+		#}
+		ENDIF
+		
+		#####################################################################################
+		sv_h="cnt|select REGEXP_COUNT('"+CUST.DGOTE.CLN+"','@') from dual"
+		PRINT(sv_h)
+		sv_k = urhk_dbSelectwithbind(sv_h)
+		PRINT(sv_k)
+		IF(sv_k == 0)THEN
+		#{
+			CUST.DGOTE.crCount = BANCS.OUTPARAM.cnt
+			PRINT(CUST.DGOTE.crCount)
+			#}
+		ELSE
+			#{
+			PRINT("No Credit Account")
+			#GOTO MAIN
+		#}
+		ENDIF
+		sv_h=CUST.DGOTE.crCount
+		PRINT(sv_h)
+		sv_m=1
+		CUST.DGOTE.serialNo = "0"
+		sv_z = STRLEN(CUST.DGOTE.CLN)
+		PRINT(sv_z)
+		CUST.DGOTE.CLN1 =mid$(CUST.DGOTE.CLN,1,sv_z)
+		PRINT(CUST.DGOTE.CLN1)
+		CUST.DGOTE.disburseAmt ="0"
+		WHILE(sv_m <= sv_h)
+		#{
+			PRINT(sv_m)
+			sv_z = STRLEN(CUST.DGOTE.CLN1)
+			PRINT(sv_z)
+			sv_x=GETPOSITION(CUST.DGOTE.CLN1,"@")
+			PRINT(sv_x)
+			CUST.DGOTE.data = mid$(CUST.DGOTE.CLN1,0,sv_x)
+			PRINT(CUST.DGOTE.data)
+			CUST.DGOTE.CLN1 = mid$(CUST.DGOTE.CLN1,sv_x,sv_z)
+			PRINT(CUST.DGOTE.CLN1)
+			sv_z = STRLEN(CUST.DGOTE.data)
+			PRINT(sv_z)
+			sv_x=GETPOSITION(CUST.DGOTE.data,",")
+			PRINT(sv_x)
+			CUST.DGOTE.credAcctNum = mid$(CUST.DGOTE.data,0,sv_x-1)
+			PRINT(CUST.DGOTE.credAcctNum)
+			
+			CUST.DGOTE.data1 = mid$(CUST.DGOTE.data,sv_x,sv_z-sv_x)
+			PRINT(CUST.DGOTE.data1)
+			sv_y=GETPOSITION(CUST.DGOTE.data1,",")
+			PRINT(sv_y)
+			CUST.DGOTE.credAmt = mid$(CUST.DGOTE.data1,0,sv_y-1)
+			PRINT(CUST.DGOTE.credAmt)
+			
+			IF(CUST.DGOTE.credAcctNum !="")THEN
+			#{
+				sv_o="cnt1|select REGEXP_COUNT('"+CUST.DGOTE.CLN+"','/') from dual"
+				PRINT(sv_o)
+				sv_k = urhk_dbSelectwithbind(sv_o)
+				PRINT(sv_k)
+				IF(sv_k == 0)THEN
+				#{
+					CUST.DGOTE.chrgCnt1 = BANCS.OUTPARAM.cnt1
+					PRINT(CUST.DGOTE.chrgCnt1)
+					#}
+				ELSE
+					#{
+					PRINT("No Charge")
+					GOTO MAIN
+				#}
+				ENDIF
+				sv_o=CUST.DGOTE.chrgCnt1
+				PRINT(sv_o)
+				sv_n=1
+				CUST.DGOTE.serialNo1 = "0"
+				CUST.DGOTE.CLN2 =CUST.DGOTE.CLN
+				PRINT(CUST.DGOTE.CLN2)
+				CUST.DGOTE.totChrgAmt="0"
+				WHILE(sv_n <= sv_o)
+				#{
+					PRINT(sv_n)
+					sv_z = STRLEN(CUST.DGOTE.CLN2)
+					PRINT(sv_z)
+					sv_x=GETPOSITION(CUST.DGOTE.CLN2,"/")
+					PRINT(sv_x)
+					CUST.DGOTE.data = mid$(CUST.DGOTE.CLN2,sv_x,sv_z-sv_x)
+					PRINT(CUST.DGOTE.data)
+					sv_z = STRLEN(CUST.DGOTE.data)
+					PRINT(sv_z)
+					sv_x=GETPOSITION(CUST.DGOTE.data,"@")
+					PRINT(sv_x)
+					
+					CUST.DGOTE.CLN2 = mid$(CUST.DGOTE.data,sv_x,sv_z)
+					PRINT(CUST.DGOTE.CLN2)
+					CUST.DGOTE.data1 = mid$(CUST.DGOTE.data,0,sv_x)
+					PRINT(CUST.DGOTE.data1)
+					sv_y=GETPOSITION(CUST.DGOTE.data1,"+")
+					PRINT(sv_y)
+					CUST.DGOTE.chrgType = mid$(CUST.DGOTE.data1,0,sv_y-1)
+					PRINT(CUST.DGOTE.chrgType)
+					
+					sv_x=GETPOSITION(CUST.DGOTE.data1,"+")
+					PRINT(sv_x)
+					sv_z = STRLEN(CUST.DGOTE.data1)
+					PRINT(sv_z)
+					CUST.DGOTE.data2 = mid$(CUST.DGOTE.data1,sv_x,sv_z-sv_x)
+					PRINT(CUST.DGOTE.data2)
+					sv_x=GETPOSITION(CUST.DGOTE.data2,"+")
+					PRINT(sv_x)
+					CUST.DGOTE.eventType = mid$(CUST.DGOTE.data2,0,sv_x-1)
+					PRINT(CUST.DGOTE.eventType)
+					
+					sv_z = STRLEN(CUST.DGOTE.data2)
+					PRINT(sv_z)
+					CUST.DGOTE.data3 = mid$(CUST.DGOTE.data2,sv_x,sv_z-sv_x)
+					PRINT(CUST.DGOTE.data3)
+					
+					sv_x=GETPOSITION(CUST.DGOTE.data3,"+")
+					PRINT(sv_x)
+					
+					CUST.DGOTE.chrgAcct = mid$(CUST.DGOTE.data3,0,sv_x-1)
+					PRINT(CUST.DGOTE.chrgAcct)
+					
+					sv_y=GETPOSITION(CUST.DGOTE.data3,"@")
+					PRINT(sv_y)
+					#CUST.DGOTE.chrgAmt = mid$(CUST.DGOTE.data3,sv_x,sv_y-sv_x-1)
+					CUST.DGOTE.chrgAmt = mid$(CUST.DGOTE.data3,sv_x,sv_y-sv_x-5)
+					PRINT(CUST.DGOTE.chrgAmt)
+					
+					CUST.DGOTE.chrgSrlNum = mid$(CUST.DGOTE.data3,sv_y-4,1)
+					PRINT(CUST.DGOTE.chrgSrlNum)
+					
+					
+					
+					IF(CUST.DGOTE.credAcctNum == CUST.DGOTE.chrgAcct)THEN
+					#{
+						
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.key.serialNum|"+CUST.DGOTE.serialNo1)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.key.chargeType|"+CUST.DGOTE.chrgType)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.eventSrlNum|"+CUST.DGOTE.chrgSrlNum)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.systemChargeAmt|"+CUST.DGOTE.chrgAmt+"|"+CUST.DGOTE.acct_crncy_code)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.userChargeAmt|"+CUST.DGOTE.chrgAmt+"|"+CUST.DGOTE.acct_crncy_code)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.chrgEventType|"+CUST.DGOTE.chrgType)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.eventId|"+CUST.DGOTE.eventType)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.chargeCrncy.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.collectedAmt|"+CUST.DGOTE.amt+"|"+CUST.DGOTE.acct_crncy_code)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.newRecordFlg|Y")
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.selectFlg|Y")
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.chargeAcctId.foracid|"+CUST.DGOTE.chrgAcct)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.chargeAcctId.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+						sv_a= urhk_SetUrhkInp("acctDisburseTranLA.chargesLL.<rec_"+CUST.DGOTE.serialNo1+">.chargeAcctId.solId|"+BANCS.STDIN.mySolId)
+						PRINT(sv_a)
+						
+						CUST.DGOTE.totChrgAmt = CDOUBLE(CUST.DGOTE.totChrgAmt)+CDOUBLE(CUST.DGOTE.chrgAmt)
+						PRINT(CUST.DGOTE.totChrgAmt)
+						CUST.DGOTE.serialNo1 = CINT(CUST.DGOTE.serialNo1)+1
+						PRINT(CUST.DGOTE.serialNo1)
+					#}
+					ENDIF
+					sv_n = sv_n + 1
+					PRINT(sv_n)
+					
+					
+				#}
+				DO
+				
+			MAIN:
+				#				sv_m="Loan Disbursement was Successful"
+				#				sv_l = urhk_SetOrbOut("SuccessOrFailure|Y")
+				#				sv_s = urhk_SetOrbOut("RESULT_MSG|" + sv_m)
+				#				EXITSCRIPT
+				######################################
+				# Define  the transaction #####
+				########################################
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.isDetailsEntered|1")
+				IF(CUST.DGOTE.funcCode=="R")THEN
+				#{
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.modeOfCall|R")
+				#}
+				ENDIF
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.foracid|"+CUST.DGOTE.acctNo)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+				#sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.solId|"+BANCS.STDIN.mySolId)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.tranType.code|T")
+				
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.deductOvduDmds|N")
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.loanAmt|"+CUST.DGOTE.amt+ "|" +CUST.DGOTE.acct_crncy_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.amtAlreadyDisbursed|"+ "0.00" + "|" +CUST.DGOTE.acct_crncy_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.amtAvailForDisbursement|"+CUST.DGOTE.availDisbAmt+ "|" +CUST.DGOTE.acct_crncy_code)
+				PRINT (sv_a)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.deductOvduDmds|N")
+				
+				
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.key.serial_num|0")
+				#sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.key.srlNum|1")
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.modeOfDisb|A")
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crAcct.foracid|"+CUST.DGOTE.credAcctNum)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crAcct.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crValueDate|"+BANCS.STDIN.BODDate )
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.glDate|"+  BANCS.STDIN.BODDate)
+				#sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.laAmtCrncy|"+CUST.DGOTE.credAmt+"|"+CUST.DGOTE.acct_crncy_code)
+				
+				#CUST.DGOTE.disburseAmt = CDOUBLE(CUST.DGOTE.disburseAmt) + CDOUBLE(CUST.DGOTE.credAmt)
+				#PRINT(CUST.DGOTE.disburseAmt)
+				#CUST.DGOTE.disburseAmt= CDOUBLE(CUST.DGOTE.credAmt)+CDOUBLE(CUST.DGOTE.totChrgAmt)
+				CUST.DGOTE.disburseAmt= CDOUBLE(CUST.DGOTE.credAmt) + CDOUBLE(CUST.DGOTE.totChrgAmt)
+				PRINT(CUST.DGOTE.disburseAmt)
+				CUST.DGOTE.netDisburseAmt= CDOUBLE(CUST.DGOTE.credAmt) - CDOUBLE(CUST.DGOTE.totChrgAmt)
+				PRINT(CUST.DGOTE.netDisburseAmt)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.laAmtCrncy|"+CUST.DGOTE.netDisburseAmt+"|"+CUST.DGOTE.acct_crncy_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crAmtCrncy|"+CUST.DGOTE.netDisburseAmt+"|"+CUST.DGOTE.acct_crncy_code)
+				
+				##########################################################################################
+				#=============================================================================================================
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.netDisbursalAmt|"+CUST.DGOTE.netDisburseAmt+"|"+CUST.DGOTE.acct_crncy_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.payoutAmt|"+CUST.DGOTE.credAmt+"|"+CUST.DGOTE.acct_crncy_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.netPayoutAmt|"+CUST.DGOTE.credAmt+"|"+CUST.DGOTE.acct_crncy_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.disburseAmt|"+CUST.DGOTE.credAmt+"|" +CUST.DGOTE.acct_crncy_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.glDate|" + BANCS.STDIN.BODDate)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.valueDate|"+  BANCS.STDIN.BODDate)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.solId.solId|"+BANCS.STDIN.mySolId)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.schmCode.schmCode|"+CUST.DGOTE.Schm_code)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.schmCode.schmType|LAA")
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.crncyCode.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+				
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.transferAcctNum.foracid|"+CUST.DGOTE.operAcctNum)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.transferAcctNum.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+				PRINT (sv_a)
+				
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.grossNetDisbt.code|"+CUST.DGOTE.groNetDisb)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.finalDisbFlg|"+CUST.DGOTE.finDisb)
+				sv_a= urhk_SetUrhkInp("acctDisburseTranLA.advanceEiAmt|0|"+CUST.DGOTE.acct_crncy_code)
+				sv_a = urhk_SetUrhkInp("tranMesg.tranDetail.onlineOrBatchMode|O")
+				
+				######---------------------------------------------------------------#########
+				### SRV to Insert Disburse Data  ###
+				###---------------------------------------------------------------------#######
+				IF(CUST.DGOTE.funcCode=="R")THEN
+				#{
+					sv_s = urhk_ExecSrv("SRV_ProcessRvslDisbData|same_user_verify = Y|retain_all_output = Y")
+					PRINT(sv_s)
+					#}
+				ELSE
+					#{
+					sv_s = urhk_ExecSrv("SRV_InsertDisbData|same_user_verify = Y|retain_all_output = Y")
+					PRINT(sv_s)
+				#}
+				ENDIF
+				
+				CUST.DGOTE.errmsg=""
+				IF (sv_s != 0) THEN
+				#{
+					sv_c = BANCS.OUTPUT.successOrFailure
+					PRINT(sv_c)
+					PRINT(BANCS.OUTPARAM.Fatal_num)
+					PRINT(BANCS.OUTPARAM.Error_num)
+					PRINT(BANCS.OUTPARAM.Warning_num)
+					PRINT(BANCS.OUTPARAM.UserInfo_num)
+					PRINT(BANCS.OUTPARAM.Xcpn_num)
+					PRINT(BANCS.OUTPARAM.Xcpn_Err_num)
+					PRINT(BANCS.OUTPARAM.Xcpn_Xcpn_num)
+					PRINT(BANCS.OUTPARAM.Xcpn_Err_num)
+					PRINT("here 108")
+					sv_d = 1
+					sv_c = CINT(BANCS.OUTPARAM.Error_num)
+					WHILE (sv_d <= sv_c)
+					#{
+						sv_f = FORMAT$(sv_d,"%d")
+						sv_e = ("BANCS").("OUTPARAM").("ErrorMesg_"+sv_f)
+						PRINT(sv_e)
+						CUST.DGOTE.errmsg=CUST.DGOTE.errmsg+sv_e
+						sv_e = ("BANCS").("OUTPARAM").("ErrorCode_"+sv_f)
+						PRINT(sv_e)
+						sv_e = ("BANCS").("OUTPARAM").("Tag_"+sv_f)
+						PRINT(sv_e)
+						sv_d = sv_d + 1
+					#}
+					DO
+					PRINT("here 109")
+					sv_d = 1
+					sv_c = CINT(BANCS.OUTPARAM.Xcpn_num)
+					WHILE (sv_d <= sv_c)
+					#{
+						sv_f = FORMAT$(sv_d,"%d")
+						sv_e = ("BANCS").("OUTPARAM").("XcpnDesc_"+sv_f)
+						PRINT(sv_e)
+						#sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Exception - During Disbursement Exception :"+sv_e+ "|")
+						sv_d = sv_d + 1
+					#}
+					DO
+					PRINT("here 110")
+					sv_d = 1
+					sv_c = CINT(BANCS.OUTPARAM.Warning_num)
+					WHILE (sv_d <= sv_c)
+					#{
+						sv_f = FORMAT$(sv_d,"%d")
+						sv_e = ("BANCS").("OUTPARAM").("WarningMesg"+sv_f)
+						PRINT(sv_e)
+						#sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Warning - During Disbursement :"+sv_e+ "|")
+						sv_d = sv_d + 1
+					#}
+					DO
+					
+					IF ((CINT(BANCS.OUTPARAM.Warning_num) > 0) OR (CINT(BANCS.OUTPARAM.Xcpn_num) > 0) OR (CINT(BANCS.OUTPARAM.UserInfo_num) > 0) OR (CINT (BANCS.OUTPARAM.Xcpn_Xcpn_num) > 0))THEN
+					#{
+						sv_a = urhk_CopyOutToIn("")
+						PRINT(sv_a)
+						IF(CUST.DGOTE.funcCode=="R")THEN
+						#{
+							sv_s = urhk_ExecSrv("SRV_ProcessRvslDisbData|same_user_verify = Y|retain_all_output = Y")
+							PRINT(sv_s)
+							#}
+						ELSE
+							#{
+							sv_s = urhk_ExecSrv("SRV_InsertDisbData|same_user_verify = Y|retain_all_output = Y")
+							PRINT(sv_s)
+						#}
+						ENDIF
+						
+						IF (sv_s != 0) THEN
+						#{
+							sv_c = BANCS.OUTPUT.successOrFailure
+							PRINT(sv_c)
+							PRINT(BANCS.OUTPARAM.Fatal_num)
+							PRINT(BANCS.OUTPARAM.Error_num)
+							PRINT(BANCS.OUTPARAM.Warning_num)
+							PRINT(BANCS.OUTPARAM.UserInfo_num)
+							PRINT(BANCS.OUTPARAM.Xcpn_num)
+							PRINT(BANCS.OUTPARAM.Xcpn_Err_num)
+							PRINT(BANCS.OUTPARAM.Xcpn_Xcpn_num)
+							PRINT(BANCS.OUTPARAM.Xcpn_Err_num)
+							PRINT("here 108")
+							sv_d = 1
+							sv_c = CINT(BANCS.OUTPARAM.Error_num)
+							WHILE (sv_d <= sv_c)
+							#{
+								sv_f = FORMAT$(sv_d,"%d")
+								sv_e = ("BANCS").("OUTPARAM").("ErrorMesg_"+sv_f)
+								PRINT(sv_e)
+								CUST.DGOTE.errmsg=CUST.DGOTE.errmsg+sv_e
+								sv_e = ("BANCS").("OUTPARAM").("ErrorCode_"+sv_f)
+								PRINT(sv_e)
+								sv_e = ("BANCS").("OUTPARAM").("Tag_"+sv_f)
+								PRINT(sv_e)
+								sv_d = sv_d + 1
+							#}
+							DO
+							PRINT("here 109")
+							sv_d = 1
+							sv_c = CINT(BANCS.OUTPARAM.Xcpn_num)
+							WHILE (sv_d <= sv_c)
+							#{
+								sv_f = FORMAT$(sv_d,"%d")
+								sv_e = ("BANCS").("OUTPARAM").("XcpnDesc_"+sv_f)
+								PRINT(sv_e)
+								#sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Exception - During Disbursement Exception :"+sv_e+ "|")
+								sv_d = sv_d + 1
+							#}
+							DO
+							PRINT("here 110")
+							sv_d = 1
+							sv_c = CINT(BANCS.OUTPARAM.Warning_num)
+							WHILE (sv_d <= sv_c)
+							#{
+								sv_f = FORMAT$(sv_d,"%d")
+								sv_e = ("BANCS").("OUTPARAM").("WarningMesg"+sv_f)
+								PRINT(sv_e)
+								#sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Warning - During Disbursement :"+sv_e+ "|")
+								sv_d = sv_d + 1
+							#}
+							DO
+							sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+							sv_a = urhk_SetOrbErr("Error in disbursement: "+CUST.DGOTE.errmsg)
+							GOTO ENDOFSCRIPT
+						#}
+						ELSE
+						#{
+							IF(CUST.DGOTE.funcCode=="R")THEN
+							#{
+								GOTO NEXTRC
+							#}
+							ENDIF
+						#}
+						ENDIF
+					#}
+					ENDIF
+					
+				#}
+				ENDIF
+				
+				
+				PRINT(BANCS.OUTPARAM.successOrFailure)
+				IF(sv_s == 0)THEN
+				#{
+					#sv_q = urhk_B2k_PrintRepos("BANCS")
+					#print(sv_q)
+					PRINT(BANCS.OUTPARAM.successOrFailure)
+					#print(BANCS.OUTPARAM.tranId)
+					sv_a = urhk_CopyOutToIn("")
+					PRINT(sv_a)
+					
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.isDetailsEntered|1")
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.foracid|"+CUST.DGOTE.acctNo)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+					#sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.solId|"+BANCS.STDIN.mySolId)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.tranType.code|T")
+					
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.deductOvduDmds|N")
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.loanAmt|"+CUST.DGOTE.amt+ "|" +CUST.DGOTE.acct_crncy_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.amtAlreadyDisbursed|"+ "0.00" + "|" +CUST.DGOTE.acct_crncy_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.amtAvailForDisbursement|"+CUST.DGOTE.availDisbAmt+ "|" +CUST.DGOTE.acct_crncy_code)
+					PRINT (sv_a)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.deductOvduDmds|N")
+					
+					
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.key.serial_num|0")
+					#sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.key.srlNum|1")
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.modeOfDisb|A")
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crAcct.foracid|"+CUST.DGOTE.credAcctNum)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crAcct.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crValueDate|"+BANCS.STDIN.BODDate )
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.glDate|"+  BANCS.STDIN.BODDate)
+					#sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.laAmtCrncy|"+CUST.DGOTE.credAmt+"|"+CUST.DGOTE.acct_crncy_code)
+					
+					#CUST.DGOTE.disburseAmt = CDOUBLE(CUST.DGOTE.disburseAmt) + CDOUBLE(CUST.DGOTE.credAmt)
+					#PRINT(CUST.DGOTE.disburseAmt)
+					#CUST.DGOTE.disburseAmt= CDOUBLE(CUST.DGOTE.credAmt)+CDOUBLE(CUST.DGOTE.totChrgAmt)
+					CUST.DGOTE.disburseAmt= CDOUBLE(CUST.DGOTE.credAmt) + CDOUBLE(CUST.DGOTE.totChrgAmt)
+					PRINT(CUST.DGOTE.disburseAmt)
+					CUST.DGOTE.netDisburseAmt= CDOUBLE(CUST.DGOTE.credAmt) - CDOUBLE(CUST.DGOTE.totChrgAmt)
+					PRINT(CUST.DGOTE.netDisburseAmt)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.laAmtCrncy|"+CUST.DGOTE.netDisburseAmt+"|"+CUST.DGOTE.acct_crncy_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crAmtCrncy|"+CUST.DGOTE.netDisburseAmt+"|"+CUST.DGOTE.acct_crncy_code)
+					
+					##########################################################################################
+					#=============================================================================================================
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.netDisbursalAmt|"+CUST.DGOTE.netDisburseAmt+"|"+CUST.DGOTE.acct_crncy_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.payoutAmt|"+CUST.DGOTE.credAmt+"|"+CUST.DGOTE.acct_crncy_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.netPayoutAmt|"+CUST.DGOTE.credAmt+"|"+CUST.DGOTE.acct_crncy_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.disburseAmt|"+CUST.DGOTE.credAmt+"|" +CUST.DGOTE.acct_crncy_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.glDate|" + BANCS.STDIN.BODDate)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.valueDate|"+  BANCS.STDIN.BODDate)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.solId.solId|"+BANCS.STDIN.mySolId)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.schmCode.schmCode|"+CUST.DGOTE.Schm_code)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.schmCode.schmType|LAA")
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.crncyCode.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+					
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.transferAcctNum.foracid|"+CUST.DGOTE.operAcctNum)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.transferAcctNum.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+					PRINT (sv_a)
+					
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.grossNetDisbt.code|"+CUST.DGOTE.groNetDisb)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.finalDisbFlg|"+CUST.DGOTE.finDisb)
+					sv_a= urhk_SetUrhkInp("acctDisburseTranLA.advanceEiAmt|0|"+CUST.DGOTE.acct_crncy_code)
+					sv_a = urhk_SetUrhkInp("tranMesg.tranDetail.onlineOrBatchMode|O")
+					###---------------------------------------------------------------------#######
+					### SRV to Verify the Disbursement  ###
+					###---------------------------------------------------------------------#######
+					IF(CUST.DGOTE.funcCode=="R")THEN
+					#{
+						sv_s = urhk_ExecSrv("SRV_VerifyRvslDisbData|same_user_verify = Y|retain_all_output = Y")
+						PRINT(sv_s)
+						#}
+					ELSE
+						#{
+						sv_s = urhk_ExecSrv("SRV_VerifyDisbData|same_user_verify = Y|retain_all_output = Y")
+						PRINT(sv_s)
+					#}
+					ENDIF
+					
+					IF(sv_s == 0)THEN
+					#{
+						#sv_q = urhk_B2k_PrintRepos("BANCS")
+						#print(sv_q)
+						PRINT(BANCS.OUTPARAM.successOrFailure)
+						#print(BANCS.OUTPARAM.tranId)
+						
+						IF(BANCS.OUTPARAM.successOrFailure == "S") THEN
+						#{
+							CUST.DGOTE.responseflag = "S"
+							PRINT(CUST.DGOTE.responseflag)
+							#}
+						ELSE
+							#{
+							CUST.DGOTE.responseflag = "F"
+							PRINT(CUST.DGOTE.responseflag)
+						#}
+						ENDIF
+						
+					#}
+					ENDIF
+					
+					IF (sv_s != 0) THEN
+					#{
+						sv_c = BANCS.OUTPUT.successOrFailure
+						PRINT(sv_c)
+						PRINT(BANCS.OUTPARAM.Fatal_num)
+						PRINT(BANCS.OUTPARAM.Error_num)
+						PRINT(BANCS.OUTPARAM.Warning_num)
+						PRINT(BANCS.OUTPARAM.UserInfo_num)
+						PRINT(BANCS.OUTPARAM.Xcpn_num)
+						PRINT(BANCS.OUTPARAM.Xcpn_Err_num)
+						PRINT(BANCS.OUTPARAM.Xcpn_Xcpn_num)
+						PRINT(BANCS.OUTPARAM.Xcpn_Err_num)
+						PRINT("here 108")
+						sv_d = 1
+						sv_c = CINT(BANCS.OUTPARAM.Error_num)
+						WHILE (sv_d <= sv_c)
+						#{
+							sv_f = FORMAT$(sv_d,"%d")
+							sv_e = ("BANCS").("OUTPARAM").("ErrorMesg_"+sv_f)
+							PRINT(sv_e)
+							CUST.DGOTE.errmsg=CUST.DGOTE.errmsg+": "+sv_e
+							#sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Error - During Disburse Verify  (Need to manually cancel/verify from Finacle) :"+sv_e+ "|")
+							#print(sv_w)
+							#print(sv_r)
+							#GOTO EndOfScript
+							sv_e = ("BANCS").("OUTPARAM").("ErrorCode_"+sv_f)
+							PRINT(sv_e)
+							sv_e = ("BANCS").("OUTPARAM").("Tag_"+sv_f)
+							PRINT(sv_e)
+							sv_d = sv_d + 1
+						#}
+						DO
+						PRINT("here 109")
+						sv_d = 1
+						sv_c = CINT(BANCS.OUTPARAM.Xcpn_num)
+						WHILE (sv_d <= sv_c)
+						#{
+							sv_f = FORMAT$(sv_d,"%d")
+							sv_e = ("BANCS").("OUTPARAM").("XcpnDesc_"+sv_f)
+							PRINT(sv_e)
+							#sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Exception - During Disburse Verify  (Need to manually cancel/verify from Finacle) :"+sv_e+ "|")
+							sv_d = sv_d + 1
+						#}
+						DO
+						PRINT("here 110")
+						sv_d = 1
+						sv_c = CINT(BANCS.OUTPARAM.Warning_num)
+						WHILE (sv_d <= sv_c)
+						#{
+							sv_f = FORMAT$(sv_d,"%d")
+							sv_e = ("BANCS").("OUTPARAM").("WarningMesg"+sv_f)
+							PRINT(sv_e)
+							#sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Warning - During Disburse Verify  :"+sv_e+ "|")
+							sv_d = sv_d + 1
+							sv_d = sv_d + 1
+						#}
+						DO
+						
+						#############################################
+						#### New changes starts here #####
+						###############################################
+						
+						IF ((CINT(BANCS.OUTPARAM.Warning_num) > 0) OR (CINT(BANCS.OUTPARAM.Xcpn_num) > 0) OR (CINT(BANCS.OUTPARAM.UserInfo_num) > 0) OR (CINT (BANCS.OUTPARAM.Xcpn_Xcpn_num) > 0))THEN
+						#{
+							sv_a = urhk_CopyOutToIn("")
+							PRINT(sv_a)
+							
+							#### INPUTS #####
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.isDetailsEntered|1")
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.foracid|" +CUST.DGOTE.acctNo)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.laAcct.solId|"+BANCS.STDIN.mySolId)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.tranType.code|T")
+							
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.glDate|" + BANCS.STDIN.BODDate)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.disburseAmt|"+CUST.DGOTE.disburseAmt+"|" +CUST.DGOTE.acct_crncy_code)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.valueDate|"+  BANCS.STDIN.BODDate)
+							#sv_a= urhk_SetUrhkInp("acctDisburseTranLA.solId.solId|230")
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.schmCode.schmCode|"+CUST.DGOTE.Schm_code)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.crncyCode.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+							
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.transferAcctNum.foracid|" +CUST.DGOTE.operAcctNum)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.grossNetDisbt.code|"+CUST.DGOTE.groNetDisb)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.key.serial_num|0")
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.modeOfDisb|A")
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crAcct.foracid|"+CUST.DGOTE.credAcctNum)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crAcct.crncyCode|"+CUST.DGOTE.acct_crncy_code)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.crValueDate|"+BANCS.STDIN.BODDate )
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.glDate|"+  BANCS.STDIN.BODDate)
+							sv_a= urhk_SetUrhkInp("acctDisburseTranLA.partTranLL.<rec_0>.laAmtCrncy|"+CUST.DGOTE.credAmt+"|"+CUST.DGOTE.acct_crncy_code)
+							
+							
+							###---------------------------------------------------------------------#######
+							### SRV to Verify the Disbursement  ###
+							###---------------------------------------------------------------------#######
+							IF(CUST.DGOTE.funcCode=="R")THEN
+							#{
+								sv_s = urhk_ExecSrv("SRV_VerifyRvslDisbData|same_user_verify = Y|retain_all_output = Y")
+								PRINT(sv_s)
+								#}
+							ELSE
+								#{
+								sv_s = urhk_ExecSrv("SRV_VerifyDisbData|same_user_verify = Y|retain_all_output = Y")
+								PRINT(sv_s)
+							#}
+							ENDIF
+							
+							IF(sv_s == 0)THEN
+							#{
+								IF(BANCS.OUTPARAM.successOrFailure == "S") THEN
+								#{
+									CUST.DGOTE.responseflag = "S"
+									PRINT(CUST.DGOTE.responseflag)
+									#}
+								ELSE
+									#{
+									CUST.DGOTE.responseflag = "F"
+									PRINT(CUST.DGOTE.responseflag)
+								#}
+								ENDIF
+								
+								
+							#}
+							ENDIF
+							
+							IF (sv_s != 0) THEN
+							#{
+								sv_c = BANCS.OUTPUT.successOrFailure
+								PRINT(sv_c)
+								PRINT(BANCS.OUTPARAM.Fatal_num)
+								PRINT(BANCS.OUTPARAM.Error_num)
+								PRINT(BANCS.OUTPARAM.Warning_num)
+								PRINT(BANCS.OUTPARAM.UserInfo_num)
+								PRINT(BANCS.OUTPARAM.Xcpn_num)
+								PRINT(BANCS.OUTPARAM.Xcpn_Err_num)
+								PRINT(BANCS.OUTPARAM.Xcpn_Xcpn_num)
+								PRINT(BANCS.OUTPARAM.Xcpn_Err_num)
+								PRINT("here 108")
+								sv_d = 1
+								sv_c = CINT(BANCS.OUTPARAM.Error_num)
+								WHILE (sv_d <= sv_c)
+								#{
+									sv_f = FORMAT$(sv_d,"%d")
+									sv_e = ("BANCS").("OUTPARAM").("ErrorMesg_"+sv_f)
+									PRINT(sv_e)
+									CUST.DGOTE.errmsg=CUST.DGOTE.errmsg+": "+sv_e
+									# sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Error - Manual Intervention needed from Finacle Application for the Disbursement Verification"+sv_e+ "|")
+									#       print(sv_w)
+									#       print(sv_r)
+									#GOTO EndOfScript
+									sv_e = ("BANCS").("OUTPARAM").("ErrorCode_"+sv_f)
+									PRINT(sv_e)
+									sv_e = ("BANCS").("OUTPARAM").("Tag_"+sv_f)
+									PRINT(sv_e)
+									sv_d = sv_d + 1
+								#}
+								DO
+								PRINT("here 109")
+								sv_d = 1
+								sv_c = CINT(BANCS.OUTPARAM.Xcpn_num)
+								WHILE (sv_d <= sv_c)
+								#{
+									sv_f = FORMAT$(sv_d,"%d")
+									sv_e = ("BANCS").("OUTPARAM").("XcpnDesc_"+sv_f)
+									PRINT(sv_e)
+									#sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Exception - During Disburse Verify  (Need to manually cancel/verify from Finacle) :"+sv_e+ "|")
+									sv_d = sv_d + 1
+								#}
+								DO
+								PRINT("here 110")
+								sv_d = 1
+								sv_c = CINT(BANCS.OUTPARAM.Warning_num)
+								WHILE (sv_d <= sv_c)
+								#{
+									sv_f = FORMAT$(sv_d,"%d")
+									sv_e = ("BANCS").("OUTPARAM").("WarningMesg"+sv_f)
+									PRINT(sv_e)
+									#sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Warning - During Disburse Verify  :"+sv_e+ "|")
+									sv_d = sv_d + 1
+									sv_d = sv_d + 1
+								#}
+								DO
+								#}
+								
+								
+								sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+								sv_a = urhk_SetOrbErr("Error in disbursement: "+CUST.DGOTE.errmsg)
+								GOTO ENDOFSCRIPT
+								
+								
+								
+							#}
+							ENDIF
+							
+							#}
+						ELSE
+							#{
+							#       sv_r= urtn_fileWrite(sv_w + "|" +"error" + "|" +"Error - Manual Intervention needed from Finacle Application for the Disbursement Verification")
+							#       print(sv_w)
+							#       print(sv_r)
+						#}
+						ENDIF
+						
+						#############################################
+						#### New changes ends here #####
+						###############################################
+						#}
+						
+					#}
+					ENDIF
+				#}
+				ENDIF
+			#}
+			ENDIF
+		NEXTRC:
+			sv_m = sv_m + 1
+			PRINT(sv_m)
+			CUST.DGOTE.serialNo = CINT(CUST.DGOTE.serialNo)+1
+			PRINT(CUST.DGOTE.serialNo)
+			
+		#}
+		DO
+		
+		CUST.DGOTE.disburseAmt= CDOUBLE(CUST.DGOTE.disburseAmt)+CDOUBLE(CUST.DGOTE.totChrgAmt)
+		PRINT(CUST.DGOTE.disburseAmt)
+		
+		sv_v ="update CUSTOM.SIMDISBT set "
+		IF(CUST.DGOTE.funcCode=="R")THEN
+		#{
+			sv_v = sv_v + " ENTITY_CRE_FLG='R',LCHG_USER_ID='"  + BANCS.STDIN.userId  + "',"
+			sv_v = sv_v + " LCHG_TIME=sysdate, BANK_ID='"  + BANCS.STDIN.contextBankId  + "' where foracid='"+ CUST.DGOTE.acctNo + "' AND ENTITY_CRE_FLG='RE'"
+			#}
+		ELSE
+			#{
+			sv_v = sv_v + " ENTITY_CRE_FLG='Y',LCHG_USER_ID='"  + BANCS.STDIN.userId  + "',"
+			sv_v = sv_v + " LCHG_TIME=sysdate, BANK_ID='"  + BANCS.STDIN.contextBankId  + "' where foracid='"+ CUST.DGOTE.acctNo + "' AND ENTITY_CRE_FLG='N'"
+		#}
+		ENDIF
+		
+		################VALUE LIST######################
+		PRINT(sv_v)
+		sv_r  = urhk_dbSQLWithBind(sv_v)
+		PRINT(sv_r)
+		IF(sv_r!=0) THEN
+		#{
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|N")
+			sv_a = urhk_SetOrbErr("Error Verifing disbursement")
+			GOTO ENDOFSCRIPT
+			#}
+		ELSE
+			#{
+			sv_t=urhk_dbSQLWithBind("commit")
+			PRINT(sv_t)
+			IF(CUST.DGOTE.funcCode=="R")THEN
+			#{
+				sv_m="Loan Disbursement details reversed  Successfully"
+				#}
+			ELSE
+				#{
+				sv_m="Loan Disbursement details verified  Successfully"
+			#}
+			ENDIF
+			sv_l = urhk_SetOrbOut("SuccessOrFailure|Y")
+			sv_s = urhk_SetOrbOut("RESULT_MSG|" + sv_m)
+			GOTO ENDOFSCRIPT
+			
+		#}
+		ENDIF
+		
+		
+		
+		
+		
+		
+		
+		
+	ENDOFSCRIPT:
+		EXITSCRIPT
+		TRACE OFF
+END-->
