@@ -1,0 +1,250 @@
+#============================================================
+# IMPORTANT: Auto Generated Header. DO NOT CHANGE MANUALLY.
+# Product: Finacle Core
+# Category: User Defined
+# Script: lienremove_sweep.scr
+# Type: NA|default
+# Description: These types of scripts do not belong to any particular category and are standalone scripts with no script specific repositories or fields.
+# Modification Log:
+#============================================================
+
+<--START
+CHECKSUM="5ae2670d83e2527d6bab417b15b1c93d6dc5812c7e9412d19434486c229a115e"
+	# Script body goes here
+	
+	TRACE ON
+	
+	sv_r = REPEXISTS("CUST")
+	IF (sv_r != 1) THEN
+	#{
+		CREATEREP("CUST")
+	#}
+	ENDIF
+	sv_r = CLASSEXISTS("CUST","REMOV")
+	IF (sv_r != 1) THEN
+	#{
+		CREATECLASS("CUST","REMOV",5)
+	#}
+	ENDIF
+	PRINT(sv_a)
+	PRINT(sv_d)
+	sv_u = urhk_B2K_PrintRepos("BANCS")
+	##check for error in loop
+	sv_r = REPEXISTS("UBACUST")
+	IF (sv_r == 1) THEN
+	#{
+		sv_r = CLASSEXISTS("UBACUST","TaxCust")
+		IF (sv_r == 1) THEN
+		#{
+			IF (FIELDEXISTS(UBACUST.TaxCust.successflg)) THEN
+			#{
+				UBACUST.TaxCust.successflg=""
+				#}
+				
+			#}
+			ENDIF
+		#}
+		ENDIF
+	#}
+	ENDIF
+	
+	
+	
+	
+	CUST.REMOV.opacct        = sv_a
+	CUST.REMOV.opsolid     = sv_d
+	#CUST.REMOV.unpaid     = sv_e
+	PRINT(CUST.REMOV.opacct)
+	PRINT(CUST.REMOV.opsolid)
+	#print(CUST.REMOV.unpaid)
+	CUST.REMOV.inpUptoDate = mid$(BANCS.STDIN.BODDate,0,10)
+	PRINT(CUST.REMOV.inpUptoDate)
+	CUST.REMOV.inpUptoMthStart = "01-" + mid$(BANCS.STDIN.BODDate,3,7)
+	PRINT(CUST.REMOV.inpUptoMthStart)
+	CUST.REMOV.effFromDate =mid$(BANCS.STDIN.BODDate,0,10)
+	BANCS.INPARAM.BINDVARS = BANCS.STDIN.contextBankId
+	#sv_q = "liensum|select sum(lien_amt) from loansweep where lien_applied='Y' and del_flg='N'"
+	#sv_q = sv_q + " and operative_acct ='" + CUST.REMOV.opacct + "'"
+	sv_q = "liensum|select sum(lien_amt) from tbaadm.alt where entity_cre_flg='Y' AND del_flg='N' AND lien_reason_code = '014'"
+	sv_q = sv_q + " AND  acid=(select acid from gam where foracid='"+ CUST.REMOV.opacct +"') AND bank_id =?SVAR "
+	#sv_q = sv_q + " and  acid=(select acid from gam where foracid='"+ CUST.REMOV.unpaid+"')"
+	PRINT(sv_q)
+	sv_r = urhk_dbSelectWithBind(sv_q)
+	IF (sv_r != 0) THEN
+	#{
+		EXITSCRIPT
+	#}
+	ENDIF
+	CUST.REMOV.liensum = BANCS.OUTPARAM.liensum
+	PRINT(CUST.REMOV.liensum)
+	IF (CUST.REMOV.liensum != "") THEN
+	#{
+		sv_r = urhk_getAcctDetailsInRepository(CUST.REMOV.opacct)
+		PRINT(sv_r)
+		CUST.REMOV.opsolid	=BANCS.OUTPARAM.acctSolId
+		BANCS.INPARAM.acctNum = CUST.REMOV.opacct
+		PRINT(CUST.REMOV.opacct)
+		sv_d="effFromDate|select to_char(lien_start_date,'dd-mm-yyyy') from alt"
+		sv_d= sv_d + " where acid in (select acid from tbaadm.gam where foracid='"+ CUST.REMOV.opacct +"') AND lien_reason_code = '014'"
+		sv_d= sv_d + "  AND bank_id=?SVAR AND rownum=1"
+		PRINT(sv_d)
+		BANCS.INPARAM.BINDVARS=BANCS.STDIN.contextBankId
+		PRINT(BANCS.INPARAM.BINDVARS)
+		sv_e = urhk_dbSelectWithBind(sv_d)
+		PRINT(sv_e)
+		IF (sv_e == 0) THEN
+		#{
+			sv_f=BANCS.OUTPARAM.effFromDate
+			PRINT(sv_f)
+			CUST.REMOV.effFromDate =sv_f
+		#}
+		ENDIF
+		
+		sv_q = "cncy| select acct_crncy_code from tbaadm.gam where foracid = '" + CUST.REMOV.opacct + "' "
+		PRINT(sv_q)
+		BANCS.INPARAM.BINDVARS=BANCS.STDIN.contextBankId
+		PRINT(BANCS.INPARAM.BINDVARS)
+		sv_e = urhk_dbSelectWithBind(sv_q)
+		PRINT(sv_e)
+		IF (sv_e == 0) THEN
+		#{
+			CUST.REMOV.cncy = BANCS.OUTPARAM.cncy
+		#}
+		ENDIF
+		
+		#CUST.REMOV.lienAmt = -cint(CUST.REMOV.liensum)
+		CUST.REMOV.lienAmt = CUST.REMOV.liensum
+		sv_a = urhk_SetUrhkInp("acctLienMaintCrit.acctNum.foracid|" + CUST.REMOV.opacct)
+		sv_a = urhk_SetUrhkInp("acctLienMaintCrit.moduleType.type|ULIEN")
+		
+		#Call the SRV to fetch the details for the given criteria
+		sv_a = urhk_ExecSrv("SRV_FetchLienDtlsOnAcForMod|retain_all_output = Y")
+		PRINT(sv_a)
+		IF (sv_a!=0)THEN
+		#{
+			EXITSCRIPT
+		#}
+		ENDIF
+		#Copy the result to the input message structure
+		sv_a = urhk_CopyOutToIn("")
+		CUST.REMOV.reasonCode="014"
+		CUST.REMOV.remarks = "LOAN BALANCE LIEN"
+
+		#PRINT(CUST.REMOV.opacct)
+		sv_z=CUST.REMOV.opacct
+		PRINT(sv_z)
+		#setting new input
+		sv_a = urhk_SetUrhkInp("lienMaintLL.<rec_0>.key.serial_num|0")
+		#sv_a = urhk_SetUrhkInp("lienMaintLL.<rec_0>.newLienAmt|"+ CUST.REMOV.lienAmt + "|XAF")
+		sv_a = urhk_SetUrhkInp("lienMaintLL.<rec_0>.newLienAmt|0|" + CUST.REMOV.cncy)
+		sv_a = urhk_SetUrhkInp("lienMaintLL.<rec_0>.oldLienAmt|"+ CUST.REMOV.lienAmt + "|" + CUST.REMOV.cncy)
+		sv_a = urhk_SetUrhkInp("lienMaintLL.<rec_0>.expiryDate|31-12-2099 00:00:00")
+		sv_a = urhk_SetUrhkInp("lienMaintLL.<rec_0>.lienRemarks|" +CUST.REMOV.remarks)
+		sv_a = urhk_SetUrhkInp("lienMaintLL.<rec_0>.lienReasonCode.refCode|"+CUST.REMOV.reasonCode)
+		####sv_a = urhk_SetUrhkInp("lienMaintLL.<rec_0>.effFromDate|" + BANCS.STDIN.BODDate)
+		sv_a = urhk_SetUrhkInp("lienMaintLL.<rec_0>.effFromDate|"+CUST.REMOV.effFromDate)
+		sv_e = urhk_ExecSrv("SRV_ModifyLienOnAcctAndVerify|same_user_verify = Y|retain_all_output = Y")
+		PRINT(sv_z)
+		PRINT(sv_e)
+		IF (sv_e ==1) THEN
+		#{
+			# -------------------------
+			
+			#{
+			###capturing errorsand exeptions###############
+			CALL("trapSRVerror.scr")
+			sv_c = BANCS.OUTPUT.successOrFailure
+			sv_d = 1
+			sv_c = CINT(BANCS.OUTPARAM.Error_num)
+			PRINT(sv_c)
+			PRINT(sv_d)
+			PRINT(sv_z)
+			#			WHILE(sv_d <= sv_c)
+			#			#{
+			#				sv_f = FORMAT$(sv_d, "%d")
+			#				sv_e = ("BANCS").("OUTPARAM").("ErrorMesg_" + sv_f)
+			#				PRINT(sv_e)
+			#				sv_e = ("BANCS").("OUTPARAM").("ErrorCode_" + sv_f)
+			#				PRINT(sv_e)
+			#				sv_e = ("BANCS").("OUTPARAM").("Tag_" + sv_f)
+			#				PRINT(sv_e)
+			#				sv_d = sv_d + 1
+			#			#}
+			#			DO
+			#			sv_d = 1
+			#			sv_c = CINT(BANCS.OUTPARAM.Xcpn_num)
+			#			WHILE(sv_d <= sv_c)
+			#			#{
+			#				sv_f = FORMAT$(sv_d, "%d")
+			#				sv_e = ("BANCS").("OUTPARAM").("XcpnDesc_" + sv_f)
+			#				PRINT(sv_e)
+			#				sv_d = sv_d + 1
+			#			#}
+			#			DO
+			#			sv_d = 1
+			#			sv_c = CINT(BANCS.OUTPARAM.Warning_num)
+			#			WHILE(sv_d <= sv_c)
+			#			#{
+			#				sv_f = FORMAT$(sv_d, "%d")
+			#				sv_e = ("BANCS").("OUTPARAM").("WarningMesg" + sv_f)
+			#				PRINT(sv_e)
+			#				sv_d = sv_d + 1
+			#			#}
+			#			DO
+			#sv_s = urhk_SetOrbOut("SuccessOrFailure|N")
+			PRINT(sv_a)
+			PRINT(sv_z)
+			sv_r = REPEXISTS("UBACUST")
+			IF (sv_r == 1) THEN
+			#{
+				sv_r = CLASSEXISTS("UBACUST","TaxCust")
+				IF (sv_r == 1) THEN
+				#{
+					IF (FIELDEXISTS(UBACUST.TaxCust.successflg)) THEN
+					#{
+						UBACUST.TaxCust.successflg="N"
+						#}
+						
+					#}
+					ENDIF
+				#}
+				ENDIF
+			#}
+			ENDIF
+			
+			#sv_s = urhk_SetOrbOut("Error_1|ERR^" + CUST.CARDREMOV.ERR000003 + "^acctNum")
+			EXITSCRIPT
+			###capturing errors and exeptions ends
+			#}
+		ELSE
+			#{
+			PRINT(sv_a)
+			PRINT(sv_z)
+			#CUST.REMOV.opacct=sv_z
+			#PRINT(CUST.REMOV.opacct)
+			BANCS.INPARAM.BINDVARS = BANCS.STDIN.contextBankId
+			sv_q = "update CUSTOM.loansweep set lien_applied='N',lchg_time=sysdate,lchg_userid='" + BANCS.STDIN.userId + "'"
+			#sv_q = "update loansweep set lien_applied='U',lchg_time=sysdate,lchg_userid='" + BANCS.STDIN.userId + "'"
+			sv_q = sv_q + " where operative_acct='" + sv_z + "'"
+			#sv_q = sv_q + " and unpaid_acct_no='" + CUST.REMOV.unpaid + "'"
+			sv_q = sv_q + " AND lien_applied='Y' AND del_flg='N' AND bank_id = ?SVAR"
+			PRINT(sv_q)
+			sv_r = urhk_dbSQLWithBind(sv_q)
+			PRINT(sv_r)
+			IF (sv_r == 0) THEN
+			#{
+				sv_r = urhk_dbSQLWithBind("commit")
+				PRINT(sv_r)
+			#}
+			ENDIF
+		#}
+		ENDIF
+	#}
+	ENDIF
+	#ENDLOOP:
+	#DELETECLASS("CUST","REMOV")
+	#DELETEREP("CUST")
+	EXITSCRIPT
+	TRACE OFF
+	
+END-->
